@@ -31,7 +31,8 @@ export default homeStyles = StyleSheet.create({
   },
   getStartedContainer: {
     alignItems: 'center',
-    marginHorizontal: 50,
+    marginHorizontal: 0,
+    width: '100%',
   },
   homeScreenFilename: {
     marginVertical: 7,
