@@ -19,10 +19,10 @@ export class ContactsList extends React.Component {
     };
   }
 
-  _onPress = () => {
-    console.log('Hello world!');
-    console.log(this.props);
-    this.props.navigation.push("Profile");
+  _onPress = (item) => {
+    this.props.navigation.push("Profile", {
+      user: item
+    });
   }
 
 
@@ -44,12 +44,13 @@ export class ContactsList extends React.Component {
 
 
   renderRow({item}, onPress) {
+    let contact = item;
     return (
-      <TouchableOpacity onPress={onPress}>
+      <TouchableOpacity onPress={() => onPress(contact)}>
         <ListItem
-          key={item.login.uuid}
-          title={`${item.name.first} ${item.name.last}, dsfddfsasss`}
-          avatar={<Avatar large source={{uri: item.picture.medium}}/>}
+          key={contact.login.uuid}
+          title={`${contact.name.first} ${contact.name.last}, dsfddfsasss`}
+          avatar={<Avatar large source={{uri: contact.picture.medium}}/>}
         />
       </TouchableOpacity>
     )
