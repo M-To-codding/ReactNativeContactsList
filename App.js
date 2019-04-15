@@ -24,7 +24,9 @@ export default class App extends React.Component {
     } else {
       return (
         <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+          {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" animated={true} backgroundColor="#000000" />}
+          {Platform.OS === 'android' && <StatusBar barStyle="dark-content" animated={true} backgroundColor="#000000" />}
+
           <AppNavigator />
         </View>
       );
