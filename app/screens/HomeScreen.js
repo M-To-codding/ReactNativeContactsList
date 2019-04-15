@@ -18,6 +18,12 @@ import {NavigationActions} from "react-navigation";
 
 
 export default class HomeScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+
+    }
+  };
 
   static navigationOptions = ({
     header: null,
@@ -40,13 +46,6 @@ export default class HomeScreen extends React.Component {
             <Text>
               Home
             </Text>
-
-            <Button
-              title="Go to Profile"
-              onPress={() =>
-                this.props.navigation.navigate({routeName: 'Profile'})
-              }
-            />
 
           </View>
         </ScrollView>
