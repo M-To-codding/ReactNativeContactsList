@@ -13,6 +13,7 @@ import {WebBrowser} from 'expo';
 
 import {MonoText} from '../components/StyledText';
 import homeStyles from '../assets/styles/App';
+import getData from '../actions/getDataFromAsyncStorage';
 import {ContactsList} from "../components/ContactsList/ContactsList";
 import {NavigationActions} from "react-navigation";
 
@@ -20,8 +21,12 @@ import {NavigationActions} from "react-navigation";
 export default class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
+    let contacts = getData();
+    console.log('getData')
+    console.log(getData)
 
+    this.state = {
+      contacts: contacts
     }
   };
 
@@ -30,6 +35,10 @@ export default class HomeScreen extends React.Component {
   });
 
   render() {
+    const contactsList = this.state.contacts;
+    console.log('contactsList')
+    console.log(contactsList)
+
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
