@@ -1,18 +1,18 @@
-import AsyncStorage from 'react-native';
+import {AsyncStorage} from 'react-native';
 
 
-const getData = async () => {
+const getData  = async () => {
   try {
-    let data = await AsyncStorage.getItem('userContact', (err, item) => {
-      if (item) {
-       console.log(item)
-        return item;
-      }
-      return data;
-    });
+    const value = await AsyncStorage.getItem('userContact');
+
+    if (value !== null) {
+      return value;
+    }
+
   } catch (error) {
-    console.log("Error retrieving data" + error);
+    console.log(error);
   }
-}
+
+};
 
 export default getData;
