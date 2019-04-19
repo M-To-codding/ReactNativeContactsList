@@ -19,14 +19,14 @@ import {NavigationActions} from "react-navigation";
 
 
 export default class HomeScreen extends React.Component {
+  _isMounted = false;
+
   constructor(props) {
     super(props);
-    let contacts = getData();
-    console.log('getData')
-    console.log(getData)
 
     this.state = {
-      contacts: contacts
+      contacts: null,
+      loading: true
     }
   };
 
@@ -34,14 +34,44 @@ export default class HomeScreen extends React.Component {
     header: null,
   });
 
+  componentDidMount() {
+    this._isMounted = true;
+
+    var that = this;
+    getData().then((response) => {
+
+      if (this._isMounted) {
+        that.setState({
+          contacts: [JSON.parse(response)] || null,
+          loading: false
+        });
+      }
+
+    });
+  }
+
+  componentWillMount() {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  componentWillReceiveProps(nextProps, nextContext) {
+    this._isMounted = true;
+  }
+
   render() {
-    const contactsList = this.state.contacts;
-    console.log('contactsList')
-    console.log(contactsList)
+
+    const {contacts, loading, error} = this.state;
+
+    if (loading) return (<View style={styles.welcomeContainer}><Text>Home</Text><Text> Loading...</Text></View>);
 
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+
           <View style={styles.welcomeContainer}>
             <Image
               source={
@@ -55,8 +85,12 @@ export default class HomeScreen extends React.Component {
             <Text>
               Home
             </Text>
-
           </View>
+
+          <View>
+            <ContactsList navigation={this.props.navigation} savedContacts={contacts} isHome={true}/>
+          </View>
+
         </ScrollView>
       </View>
     );
@@ -65,7 +99,7 @@ export default class HomeScreen extends React.Component {
   _maybeRenderDevelopmentModeWarning() {
     if (__DEV__) {
       const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
+        <Text style={styles.helpLinkText}>
           Learn more
         </Text>
       );
@@ -84,16 +118,6 @@ export default class HomeScreen extends React.Component {
       );
     }
   }
-
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
-  };
 }
 
 const styles = homeStyles;
