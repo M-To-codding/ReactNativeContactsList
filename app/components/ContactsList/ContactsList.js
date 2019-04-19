@@ -8,10 +8,13 @@ import fetchContactsList from '../../api/fetchContactsList';
 
 
 export class ContactsList extends React.Component {
+  _isMounted = false;
+
   constructor(props) {
     super(props);
 
     this.state = {
+      isHome: props.isHome,
       contacts: {},
       refresh: false,
       error: null,
@@ -20,31 +23,62 @@ export class ContactsList extends React.Component {
   }
 
   _onPress = (item) => {
+    let that = this;
     this.props.navigation.push("Profile", {
-      user: item
+      user: item,
     });
   }
 
+  componentDidMount() {
+    this._isMounted = true;
+  }
 
   componentWillMount() {
+    this._isMounted = true;
     var that = this;
 
-    fetchContactsList().then(function (response) {
+    if (this.state.isHome && this.props.savedContacts &&  this._isMounted) {
 
-      that.setState({
-        contacts: response.results,
+      this.setState({
+        contacts: this.props.savedContacts,
         isFetching: false
-      })
+      });
 
-    }).catch(e => {
-      console.log(e);
-      this.setState({isFetching: false, error: e})
-    });
+    } else if (!this.state.isHome &&  this._isMounted) {
+
+      fetchContactsList().then(function (response) {
+
+        that.setState({
+          contacts: response.results,
+          isFetching: false
+        })
+
+      }).catch(e => {
+        console.log(e);
+        this.setState({isFetching: false, error: e})
+      });
+
+    }
   }
 
+  componentWillReceiveProps(nextProps, nextContext) {
+
+    if (this.state.isHome) {
+      this.setState({
+        contacts: nextProps.savedContacts,
+        isFetching: false
+      })
+    }
+
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
   renderRow({item}, onPress) {
     let contact = item;
+
     return (
       <TouchableOpacity onPress={() => onPress(contact)}>
         <ListItem
@@ -57,14 +91,12 @@ export class ContactsList extends React.Component {
   }
 
   render() {
-    console.log('Contacts')
-    console.log(this.state.contacts)
-    const {contacts, isFetching, error} = this.state;
 
+    const {contacts, isFetching, error} = this.state;
 
     if (isFetching) return <View><Text> Loading...</Text></View>;
 
-    if (error) return <div>{`Error: ${e.message}`}</div>;
+    if (error) return <View><Text>{e.message}</Text></View>;
 
     return (
       <ScrollView style={{width: '100%'}}>
@@ -79,7 +111,6 @@ export class ContactsList extends React.Component {
         </View>
       </ScrollView>
     );
-
   }
 
 }
