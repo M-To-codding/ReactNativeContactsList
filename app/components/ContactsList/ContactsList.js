@@ -14,7 +14,7 @@ export class ContactsList extends React.Component {
     super(props);
 
     this.state = {
-      isHome: props.isHome,
+      isSavedContacts: props.isSavedContacts,
       contacts: {},
       refresh: false,
       error: null,
@@ -37,14 +37,14 @@ export class ContactsList extends React.Component {
     this._isMounted = true;
     var that = this;
 
-    if (this.state.isHome && this.props.savedContacts &&  this._isMounted) {
+    if (this.state.isSavedContacts && this.props.savedContacts &&  this._isMounted) {
 
       this.setState({
         contacts: this.props.savedContacts,
         isFetching: false
       });
 
-    } else if (!this.state.isHome &&  this._isMounted) {
+    } else if (!this.state.isSavedContacts &&  this._isMounted) {
 
       fetchContactsList().then(function (response) {
 
@@ -63,7 +63,7 @@ export class ContactsList extends React.Component {
 
   componentWillReceiveProps(nextProps, nextContext) {
 
-    if (this.state.isHome) {
+    if (this.state.isSavedContacts) {
       this.setState({
         contacts: nextProps.savedContacts,
         isFetching: false

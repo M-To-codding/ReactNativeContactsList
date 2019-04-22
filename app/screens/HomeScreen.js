@@ -40,9 +40,9 @@ export default class HomeScreen extends React.Component {
     var that = this;
     getData().then((response) => {
 
-      if (this._isMounted) {
+      if (this._isMounted && response) {
         that.setState({
-          contacts: [JSON.parse(response)] || null,
+          contacts: JSON.parse(response) || null,
           loading: false
         });
       }
@@ -88,35 +88,12 @@ export default class HomeScreen extends React.Component {
           </View>
 
           <View>
-            <ContactsList navigation={this.props.navigation} savedContacts={contacts} isHome={true}/>
+            <ContactsList navigation={this.props.navigation} savedContacts={contacts} isSavedContacts={true}/>
           </View>
 
         </ScrollView>
       </View>
     );
-  }
-
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
-
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use useful development
-          tools. {learnMoreButton}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
-      );
-    }
   }
 }
 
