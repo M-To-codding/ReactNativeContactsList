@@ -3,7 +3,7 @@ import {AsyncStorage} from 'react-native';
 
 const getData  = async () => {
   try {
-    const value = await AsyncStorage.getItem('userContact');
+    const value = await AsyncStorage.getItem('userContacts');
 
     if (value !== null) {
       return value;
