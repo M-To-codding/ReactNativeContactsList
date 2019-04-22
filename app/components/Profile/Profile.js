@@ -3,8 +3,9 @@ import {Picker, Text, TextInput, View} from "react-native";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import HeaderImageScrollView, {TriggeringView} from "react-native-image-header-scroll-view";
 import DatePicker from "react-native-datepicker";
+
+
 import {setData} from "../../data/buttons";
-import profileStyles from "../../assets/styles/Profile";
 import ProfileButton from "../ProfileButton";
 import storeData from "../../actions/storeDataInAsyncStorage";
 
@@ -33,12 +34,11 @@ export default class Profile extends React.Component {
 
   handleProfileButtons() {
     const btnsData = setData(this.state, this.saveContact);
-    // const savedBtnsData = {};
 
     const container =
       <View style={this.state.profileStyles.btnsContainer}>
         <ProfileButton btnsData={btnsData} user={this.state.user}/>
-      </View>
+      </View>;
 
     return container;
   }

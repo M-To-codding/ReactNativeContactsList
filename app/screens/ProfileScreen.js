@@ -1,36 +1,16 @@
 import React from 'react';
-import {ExpoConfigView} from '@expo/samples';
 import {
   View,
-  Text,
-  Button,
   BackHandler,
-  FlatList,
-  StyleSheet,
-  Image,
-  ScrollView,
-  TouchableOpacity,
   StatusBar,
   RefreshControl,
-  TextInput,
-  Picker,
-  TouchableHighlight,
-  Linking
 } from 'react-native';
-import {Avatar, Header, Icon, List} from 'react-native-elements';
 import {NavigationActions, HeaderBackButton} from 'react-navigation';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import HeaderImageScrollView, {TriggeringView} from 'react-native-image-header-scroll-view';
-import DatePicker from 'react-native-datepicker';
 
 import profileStyles from '../assets/styles/Profile';
-import storeData from '../actions/storeDataInAsyncStorage';
-import ProfileButton from '../components/ProfileButton';
 import Profile from '../components/Profile/Profile';
-
-import {setData} from '../data/buttons';
-
-import deepDiffer from 'react-native/lib/deepDiffer'
 
 
 export default class ProfileScreen extends React.Component {
