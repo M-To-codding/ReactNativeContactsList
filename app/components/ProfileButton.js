@@ -1,7 +1,8 @@
 import React from 'react';
 import {Image, Linking, TouchableOpacity, View} from "react-native";
-import profileStyles from "../assets/styles/Profile";
 import deepDiffer from 'react-native/lib/deepDiffer'
+
+import buttonsStyles from "../assets/styles/ProfileButtons";
 
 
 export default class ProfileButton extends React.Component {
@@ -47,10 +48,7 @@ export default class ProfileButton extends React.Component {
       const key = 'btn-' + index;
       const saveContact = btn.onPressBtn;
       const user = this.state.user;
-      const styleForAddContactBtn = this.state.user.saved ? profileStyles.disabledBtn : '';
-
-      console.log('linkingUrl')
-      console.log(linkingUrl)
+      const styleForAddContactBtn = this.state.user.saved ? buttonsStyles.disabledBtn : '';
 
       return (
         <TouchableOpacity key={key} style={[btnStyle, index === 2 ? styleForAddContactBtn : '']}
