@@ -28,5 +28,16 @@ export default buttonsStyles = StyleSheet.create({
     marginLeft: -10,
     marginRight: -10,
     marginBottom: 15
+  },
+  smallButton: {
+    width: wp('23%'),
+    height: 70,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    borderRadius: 30,
+    margin: 10,
+    elevation: 4,
   }
 });
