@@ -1,5 +1,15 @@
 import React from 'react';
-import {ScrollView, StyleSheet, Text, View, FlatList, TouchableOpacity, Image, Button} from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  Button,
+  RefreshControl
+} from 'react-native';
 import {List, ListItem, Avatar} from 'react-native-elements';
 
 import {ExpoLinksView} from '@expo/samples';
@@ -13,19 +23,39 @@ export class ContactsList extends React.Component {
   constructor(props) {
     super(props);
 
+    console.log(this.props.navigation)
+
     this.state = {
       isSavedContacts: props.isSavedContacts,
       contacts: {},
-      refresh: false,
+      refreshing: false,
       error: null,
       isFetching: true
     };
   }
 
-  _onPress = (item) => {
+  _onRefresh() {
+    if (!this.props.refreshTheList) {
+      return;
+    }
+
+    this.props.refreshTheList = false;
     let that = this;
+
+    this.setState({refreshing: true});
+
+    fetchContactsList().then(function (response) {
+      that.setState({
+        refreshing: false,
+        contacts: response.results
+      });
+    });
+  }
+
+  _onPress = (item) => {
     this.props.navigation.push("Profile", {
       user: item,
+      checkUpdates: this.checkUpdates.bind(this)
     });
   }
 
@@ -33,22 +63,42 @@ export class ContactsList extends React.Component {
     this._isMounted = true;
   }
 
+  checkUpdates(updated) {
+    console.log('checkUpdates')
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+
+    console.log('componentWillUpdate')
+    if (this.props.refreshTheList !== prevProps.refreshTheList) {
+      this._onRefresh();
+      this.props.refreshTheList = false;
+
+    }
+  }
+
+  checkSavedContacts() {
+
+  }
+
   componentWillMount() {
     this._isMounted = true;
     var that = this;
 
-    if (this.state.isSavedContacts && this.props.savedContacts &&  this._isMounted) {
+    if (this.state.isSavedContacts && this.props.savedContacts && this._isMounted) {
 
       this.setState({
+        refreshing: false,
         contacts: this.props.savedContacts,
         isFetching: false
       });
 
-    } else if (!this.state.isSavedContacts &&  this._isMounted) {
+    } else if (!this.state.isSavedContacts && this._isMounted) {
 
       fetchContactsList().then(function (response) {
 
         that.setState({
+          refreshing: false,
           contacts: response.results,
           isFetching: false
         })
@@ -61,26 +111,21 @@ export class ContactsList extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps, nextContext) {
-
-    if (this.state.isSavedContacts) {
-      this.setState({
-        contacts: nextProps.savedContacts,
-        isFetching: false
-      })
-    }
-
-  }
-
   componentWillUnmount() {
     this._isMounted = false;
   }
 
   renderRow({item}, onPress) {
     let contact = item;
+    let contactStyle = '';
+
+    if (contact.saved && this.props.navigation.state.routeName) {
+      contactStyle = {backgroundColor: '#aaa'}
+    }
 
     return (
-      <TouchableOpacity onPress={() => onPress(contact)}>
+      <TouchableOpacity onPress={() => onPress(contact)}
+                        style={contactStyle}>
         <ListItem
           key={contact.login.uuid}
           title={`${contact.name.first} ${contact.name.last}, dsfddfsasss`}
@@ -99,7 +144,8 @@ export class ContactsList extends React.Component {
     if (error) return <View><Text>{e.message}</Text></View>;
 
     return (
-      <ScrollView style={{width: '100%'}}>
+      <ScrollView
+        style={{width: '100%'}}>
         <View>
           <List>
             <FlatList
