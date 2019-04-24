@@ -34,6 +34,17 @@ export default class ProfileButton extends React.Component {
     this.setState({
       saved: contact.saved
     })
+
+    this.props.goBack();
+  }
+
+  removeContact(contact, pressHandler) {
+    contact.saved = !this.state.saved;
+    this.props.saved = contact.saved;
+
+    pressHandler(contact.login.uuid);
+
+    this.props.goBack();
   }
 
   handleButtonsData() {
@@ -48,11 +59,20 @@ export default class ProfileButton extends React.Component {
       const key = 'btn-' + index;
       const saveContact = btn.onPressBtn;
       const user = this.state.user;
-      const styleForAddContactBtn = this.state.user.saved ? buttonsStyles.disabledBtn : '';
+      let styleForAddContactBtn = this.state.user.saved ? buttonsStyles.disabledBtn : '';
+      let onPressHandler = saveContact ? () => this.addContact(user, saveContact) : () => Linking.openURL(linkingUrl);
+
+      if(btnComponent.length > 3) {
+        styleForAddContactBtn = btnStyle;
+      }
+
+      if(index === 3) {
+        onPressHandler = () => this.removeContact(user, saveContact)
+      }
 
       return (
         <TouchableOpacity key={key} style={[btnStyle, index === 2 ? styleForAddContactBtn : '']}
-                          onPress={saveContact ? () => this.addContact(user, saveContact) : () => Linking.openURL(linkingUrl)}>
+                          onPress={onPressHandler}>
           <Image
             source={{uri: img}}
             style={imgStyle}/>
@@ -61,7 +81,6 @@ export default class ProfileButton extends React.Component {
     })
 
   }
-
 
   render() {
     const btn = this.handleButtonsData();
