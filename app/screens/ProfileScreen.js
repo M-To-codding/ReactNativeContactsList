@@ -106,7 +106,7 @@ export default class ProfileScreen extends React.Component {
           }
           scrollViewBackgroundColor="#fff">
 
-          <Profile {...this.props} profileStyles={profileStyles} user={this.state.user}/>
+          <Profile {...this.props} profileStyles={profileStyles} user={this.state.user} goBack={this.handleBackButtonClick.bind(this)}/>
 
         </HeaderImageScrollView>
 
