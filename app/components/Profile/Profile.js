@@ -8,6 +8,7 @@ import DatePicker from "react-native-datepicker";
 import {setData} from "../../data/buttons";
 import ProfileButton from "../ProfileButton";
 import storeData from "../../actions/storeDataInAsyncStorage";
+import removeData from "../../actions/removeDataFromAsyncStorage";
 
 
 export default class Profile extends React.Component {
@@ -30,15 +31,31 @@ export default class Profile extends React.Component {
 
   saveContact(contact) {
     storeData(contact);
+    this.props.navigation.state.params.checkUpdates(true);
+  }
+
+  removeContact(id) {
+    removeData(id);
+    this.props.navigation.state.params.checkUpdates(true);
   }
 
   handleProfileButtons() {
-    const btnsData = setData(this.state, this.saveContact);
+    let btnsData;
 
-    const container =
+    if (this.state.saved) {
+      btnsData = setData(this.state, this.saveContact.bind(this), this.removeContact.bind(this));
+    } else {
+      btnsData = setData(this.state, this.saveContact.bind(this));
+    }
+
+    let container = '';
+
+    // if (this.state.saved) {
+    container =
       <View style={this.state.profileStyles.btnsContainer}>
-        <ProfileButton btnsData={btnsData} user={this.state.user}/>
+        <ProfileButton btnsData={btnsData} user={this.state.user} goBack={this.props.goBack}/>
       </View>;
+    // }
 
     return container;
   }
