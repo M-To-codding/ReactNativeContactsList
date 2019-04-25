@@ -11,6 +11,7 @@ import {
   RefreshControl
 } from 'react-native';
 import {List, ListItem, Avatar} from 'react-native-elements';
+import deepDiffer from 'react-native/lib/deepDiffer';
 
 import {ExpoLinksView} from '@expo/samples';
 
@@ -23,14 +24,15 @@ export class ContactsList extends React.Component {
   constructor(props) {
     super(props);
 
-    console.log(this.props.navigation)
+    console.log(this.props)
 
     this.state = {
       isSavedContacts: props.isSavedContacts,
       contacts: {},
       refreshing: false,
       error: null,
-      isFetching: true
+      isFetching: true,
+      updatesChecked: false
     };
   }
 
@@ -63,22 +65,32 @@ export class ContactsList extends React.Component {
     this._isMounted = true;
   }
 
-  checkUpdates(updated) {
-    console.log('checkUpdates')
+  checkUpdates(updatesChecked) {
+
+    this.props.checkUpdates(updatesChecked)
+    this.setState({
+      updatesChecked
+    });
+    this.forceUpdate()
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
 
-    console.log('componentWillUpdate')
     if (this.props.refreshTheList !== prevProps.refreshTheList) {
+
       this._onRefresh();
       this.props.refreshTheList = false;
 
     }
-  }
 
-  checkSavedContacts() {
+    if (this.state.updatesChecked && deepDiffer(this.props, prevProps)) {
 
+      this._isMounted = true
+      this.setState({
+        contacts: this.props.savedContacts,
+        updatesChecked: false
+      })
+    }
   }
 
   componentWillMount() {
@@ -119,7 +131,7 @@ export class ContactsList extends React.Component {
     let contact = item;
     let contactStyle = '';
 
-    if (contact.saved && this.props.navigation.state.routeName) {
+    if (contact.saved && this.props.navigation.state.routeName !== 'Home') {
       contactStyle = {backgroundColor: '#aaa'}
     }
 
