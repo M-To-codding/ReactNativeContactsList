@@ -10,6 +10,7 @@ import {
   Button
 } from 'react-native';
 import {WebBrowser} from 'expo';
+import deepDiffer from 'react-native/lib/deepDiffer';
 
 import {MonoText} from '../components/StyledText';
 import homeStyles from '../assets/styles/App';
@@ -30,9 +31,19 @@ export default class HomeScreen extends React.Component {
     }
   };
 
-  static navigationOptions = ({
-    header: null,
-  });
+  static navigationOptions = () => {
+    return {
+      header: null,
+      tabBarOnPress({navigation, defaultHandler}) {
+        console.log('ContactsListScreen tab pressed');
+        defaultHandler();
+      },
+      onTabPress({navigation, defaultHandler}) {
+        console.log('ContactsListScreen tab pressed');
+        defaultHandler();
+      }
+    }
+  };
 
   componentDidMount() {
     this._isMounted = true;
@@ -50,6 +61,28 @@ export default class HomeScreen extends React.Component {
     });
   }
 
+  getSavedData(){
+    this._isMounted = true;
+
+    var that = this;
+    getData().then((response) => {
+      console.log('checkUpdates')
+
+      console.log(JSON.parse(response))
+      if (this._isMounted && response) {
+        that.setState({
+          contacts: JSON.parse(response) || null,
+          loading: false
+        });
+      }
+
+    });
+  }
+
+  // onNavigationStateChange(){
+  //
+  // }
+
   componentWillMount() {
     this._isMounted = true;
   }
@@ -58,8 +91,12 @@ export default class HomeScreen extends React.Component {
     this._isMounted = false;
   }
 
-  componentWillReceiveProps(nextProps, nextContext) {
-    this._isMounted = true;
+  checkUpdates(updated) {
+    if(updated) {
+      setTimeout(()=>{
+      this.getSavedData()
+    }, 200)
+    }
   }
 
   render() {
@@ -88,7 +125,7 @@ export default class HomeScreen extends React.Component {
           </View>
 
           <View>
-            <ContactsList navigation={this.props.navigation} savedContacts={contacts} isSavedContacts={true}/>
+            <ContactsList navigation={this.props.navigation} savedContacts={contacts} isSavedContacts={true} checkUpdates={this.checkUpdates.bind(this)}/>
           </View>
 
         </ScrollView>

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import {Platform} from 'react-native';
+import {createStackNavigator, createBottomTabNavigator} from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
@@ -14,7 +14,7 @@ const HomeStack = createStackNavigator({
 
 HomeStack.navigationOptions = {
   tabBarLabel: 'Home',
-  tabBarIcon: ({ focused }) => (
+  tabBarIcon: ({focused}) => (
     <TabBarIcon
       focused={focused}
       name={
@@ -32,7 +32,7 @@ const ContactsStack = createStackNavigator({
 
 ContactsStack.navigationOptions = {
   tabBarLabel: 'Contacts',
-  tabBarIcon: ({ focused }) => (
+  tabBarIcon: ({focused}) => (
     <TabBarIcon
       focused={focused}
       name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
@@ -46,16 +46,24 @@ const SettingsStack = createStackNavigator({
 
 SettingsStack.navigationOptions = {
   tabBarLabel: 'Settings',
-  tabBarIcon: ({ focused }) => (
+  tabBarIcon: ({focused}) => (
     <TabBarIcon
       focused={focused}
       name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'}
     />
-  ),
+  )
 };
 
 export default createBottomTabNavigator({
-  HomeStack,
-  ContactsStack: ContactsStack,
-  SettingsStack,
-});
+    HomeStack,
+    ContactsStack: ContactsStack,
+    SettingsStack,
+  },
+  {
+    tabBarOptions: {
+      onTabPress: () => {
+        console.log('ContactsListScreen tab pressed');
+      }
+    }
+  }
+);

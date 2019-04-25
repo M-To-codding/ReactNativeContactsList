@@ -31,6 +31,13 @@ export default class ContactsListScreen extends React.Component {
     }, 100)
   }
 
+  checkUpdates(updated) {
+
+    this.forceUpdate()
+    if(updated) {
+    }
+  }
+
   render() {
     return (
       <ScrollView style={styles.container}
@@ -43,7 +50,7 @@ export default class ContactsListScreen extends React.Component {
                   }>
 
         <View>
-          <ContactsList navigation={this.props.navigation} refreshTheList={this.state.refreshList}> </ContactsList>
+          <ContactsList navigation={this.props.navigation} refreshTheList={this.state.refreshList} checkUpdates={this.checkUpdates.bind(this)}> </ContactsList>
         </View>
 
       </ScrollView>

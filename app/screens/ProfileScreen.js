@@ -68,7 +68,10 @@ export default class ProfileScreen extends React.Component {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
-  handleBackButtonClick() {
+  handleBackButtonClick(isDataChanged) {
+      if(isDataChanged) {
+        this.forceUpdate();
+      }
     this.props.navigation.goBack(null);
     return true;
   }

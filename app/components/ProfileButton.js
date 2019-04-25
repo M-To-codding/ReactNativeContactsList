@@ -27,15 +27,13 @@ export default class ProfileButton extends React.Component {
     }
 
     contact.saved = !this.state.saved;
-    this.props.saved = contact.saved;
+    this.setState({
+      saved: contact.saved
+    });
 
     pressHandler(contact);
 
-    this.setState({
-      saved: contact.saved
-    })
-
-    this.props.goBack();
+    this.props.goBack(true);
   }
 
   removeContact(contact, pressHandler) {
@@ -44,7 +42,15 @@ export default class ProfileButton extends React.Component {
 
     pressHandler(contact.login.uuid);
 
-    this.props.goBack();
+    this.props.goBack(true);
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.state.saved !== prevState.saved) {
+      this.setState({
+        saved: this.props.saved
+      });
+    }
   }
 
   handleButtonsData() {
@@ -62,11 +68,11 @@ export default class ProfileButton extends React.Component {
       let styleForAddContactBtn = this.state.user.saved ? buttonsStyles.disabledBtn : '';
       let onPressHandler = saveContact ? () => this.addContact(user, saveContact) : () => Linking.openURL(linkingUrl);
 
-      if(btnComponent.length > 3) {
+      if (btnComponent.length > 3) {
         styleForAddContactBtn = btnStyle;
       }
 
-      if(index === 3) {
+      if (index === 3) {
         onPressHandler = () => this.removeContact(user, saveContact)
       }
 
