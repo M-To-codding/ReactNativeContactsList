@@ -19,6 +19,7 @@
     "react-native-elements": "^0.19.1",
     "react-native-image-header-scroll-view": "^0.10.1",
     "react-native-responsive-screen": "^1.2.1",
+    "react-native-settings-list": "^1.8.0",
     "react-navigation": "^3.6.1"
   },
   "devDependencies": {
