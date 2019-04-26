@@ -1,5 +1,6 @@
 import React from 'react';
 import {Image, Linking, TouchableOpacity, View} from "react-native";
+import {Icon} from "react-native-elements";
 import deepDiffer from 'react-native/lib/deepDiffer'
 
 import buttonsStyles from "../assets/styles/ProfileButtons";
@@ -60,13 +61,14 @@ export default class ProfileButton extends React.Component {
 
       const btnStyle = btn.btnStyle;
       const linkingUrl = btn.linkingUrl;
-      const img = btn.img;
+      const icon = btn.iconName;
       const imgStyle = btn.imgStyle;
       const key = 'btn-' + index;
       const saveContact = btn.onPressBtn;
       const user = this.state.user;
       let styleForAddContactBtn = this.state.user.saved ? buttonsStyles.disabledBtn : '';
       let onPressHandler = saveContact ? () => this.addContact(user, saveContact) : () => Linking.openURL(linkingUrl);
+
 
       if (btnComponent.length > 3) {
         styleForAddContactBtn = btnStyle;
@@ -79,9 +81,11 @@ export default class ProfileButton extends React.Component {
       return (
         <TouchableOpacity key={key} style={[btnStyle, index === 2 ? styleForAddContactBtn : '']}
                           onPress={onPressHandler}>
-          <Image
-            source={{uri: img}}
-            style={imgStyle}/>
+          <Icon
+            name={icon}
+            style={imgStyle}
+            color='#fff'
+          />
         </TouchableOpacity>
       )
     })
