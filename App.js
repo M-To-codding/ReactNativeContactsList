@@ -1,6 +1,6 @@
 import React from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { AppLoading, Asset, Font, Icon } from 'expo';
+import {Platform, StatusBar, StyleSheet, View} from 'react-native';
+import {AppLoading, Asset, Font, Icon} from 'expo';
 import AppNavigator from './app/navigation/AppNavigator';
 
 export default class App extends React.Component {
@@ -11,6 +11,14 @@ export default class App extends React.Component {
   static navigationOptions = ({
     header: null,
   });
+
+  checkPressing(prevState, newState) {
+
+    if (prevState.routes[0].index === 1 && newState.routes[0].index === 0) {
+      this.setState({isLoadingComplete: false});
+    }
+
+  }
 
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
@@ -24,10 +32,10 @@ export default class App extends React.Component {
     } else {
       return (
         <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" animated={true} backgroundColor="#000000" />}
-          {Platform.OS === 'android' && <StatusBar barStyle="dark-content" animated={true} backgroundColor="#000000" />}
+          {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" animated={true} backgroundColor="#000000"/>}
+          {Platform.OS === 'android' && <StatusBar barStyle="dark-content" animated={true} backgroundColor="#000000"/>}
 
-          <AppNavigator />
+          <AppNavigator onNavigationStateChange={this.checkPressing.bind(this)}/>
         </View>
       );
     }
