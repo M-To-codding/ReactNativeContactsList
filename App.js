@@ -6,6 +6,7 @@ import AppNavigator from './app/navigation/AppNavigator';
 export default class App extends React.Component {
   state = {
     isLoadingComplete: false,
+    homeScreenUpdate: false
   };
 
   static navigationOptions = ({
@@ -15,7 +16,16 @@ export default class App extends React.Component {
   checkPressing(prevState, newState) {
 
     if (prevState.routes[0].index === 1 && newState.routes[0].index === 0) {
-      this.setState({isLoadingComplete: false});
+      // this.setState({isLoadingComplete: false});
+
+      console.log('routes')
+      console.log(prevState.routes[0].index)
+      console.log(newState.routes[0].index)
+      console.log(window)
+
+      this.setState({
+        homeScreenUpdate: true
+      })
     }
 
   }
@@ -35,7 +45,7 @@ export default class App extends React.Component {
           {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" animated={true} backgroundColor="#000000"/>}
           {Platform.OS === 'android' && <StatusBar barStyle="dark-content" animated={true} backgroundColor="#000000"/>}
 
-          <AppNavigator onNavigationStateChange={this.checkPressing.bind(this)}/>
+          <AppNavigator onNavigationStateChange={this.checkPressing.bind(this)} screenProps={{homeScreenUpdate: this.state.homeScreenUpdate}}/>
         </View>
       );
     }
