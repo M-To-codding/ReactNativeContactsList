@@ -1,9 +1,12 @@
 import React from 'react';
 
-import settings from './../../data/settings'
 import {FlatList, ScrollView, TouchableOpacity, View, Text, Picker, Switch} from "react-native";
-import {Avatar, List, ListItem} from "react-native-elements";
+import {Avatar, List, ListItem, Icon} from "react-native-elements";
 import {widthPercentageToDP as wp} from "react-native-responsive-screen";
+
+import settings from './../../data/settings';
+import getAppSettings from './../../actions/getAppSettings';
+import setAppSettings from './../../actions/setAppSettings';
 
 import profileStyles from '../../assets/styles/Profile';
 
@@ -12,11 +15,10 @@ export default class Settings extends React.Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
-      settings: settings,
-      selectedCount: '10 users',
-      selectedTime: '30',
-      allowPushNotifications: false,
+      settings: {},
+      isFetching: true,
     }
   }
 
@@ -24,89 +26,194 @@ export default class Settings extends React.Component {
     header: null,
   });
 
+  getSettings() {
+    const that = this;
 
-  _onPress(settingItem) {
+    getAppSettings().then((response) => {
+      console.log('response');
+      console.log(response);
+
+      if (response) {
+        that.setState({
+          settings: JSON.parse(response),
+          isFetching: false
+        })
+      }
+    })
+  }
+
+  componentDidMount() {
+    this.getSettings();
+  }
+
+  setRecommendedCount(count) {
+    let settings = {...this.state.settings};
+    settings.recommended.selectedCount = count;
+    console.log('recommended.selectedCount');
+    console.log(settings);
+
+    this.setState({
+      settings,
+      isFetching: true
+    });
+
+    setTimeout(() => {
+      setAppSettings(this.state.settings);
+      this.getSettings();
+    }, 50)
+  }
+
+  setNotificationsDelay(delay) {
 
   }
 
+  showNotifications(isShown) {
+    const settings = {...this.state.settings};
+    settings.notifications.isShown = !isShown;
+
+    this.setState({
+      settings,
+      isFetching: true
+    });
+
+    setTimeout(() => {
+      setAppSettings(this.state.settings);
+      this.getSettings();
+    }, 50)
+  }
+
+  _onPress(settingItem) {
+    setAppSettings(this.state.settings);
+  }
+
   renderRows(onPress) {
-    let recommended = this.state.settings.recommended.count;
+    if (this.state.isFetching) {
+      return <Text> </Text>
+    }
+
+
+    let recommended = this.state.settings.recommended;
     let notifications = this.state.settings.notifications;
-    let system = this.state.settings;
+    console.log('settings')
+    console.log(recommended.selectedCount)
 
     return (
-      <View onPress={() => onPress(recommended)}
-            key={recommended.key}>
+      <View>
 
-        <View style={{backgroundColor: '#f6f6f6', flex: 1}}>
+        <View style={{flex: 1, padding: 20}}>
+
           <View>
-            <Text>
+            <Text style={{color: '#979797'}}>
               Recommended
             </Text>
           </View>
 
-          <View>
-            <Text>
-              Recomended count
-            </Text>
-            <Picker
-              selectedValue={this.state.selectedCount}
-              mode="dialog"
-              style={[
-                {
-                  flex: 1,
-                  height: 20,
-                  width: wp('45%'),
-                  borderBottomWidth: 1,
-                  borderColor: '#c1c1c1',
-                  transform: ([{ scale: 0.8 }]),
-                  justifyContent: 'flex-end',
-                  paddingHorizontal: 0,
-                  marginLeft: -20
-                }]}
-              itemStyle={{
-                borderTopWidth: 1,
-                borderTopColor: '#000',
-                borderBottomWidth: 1,
-                borderBottomColor: '#000',
-                justifyContent: 'flex-end'
-              }}
-              onValueChange={(selectedCount, itemIndex) =>
-                this.setState({selectedCount: selectedCount})
-              }>
-              {recommended.map((item, index) => {
-                  return (<Picker.Item key={`pickerItem-${index}`} label={item} value={item}/>);
-                }
-              )}
-            </Picker>
+          <View style={{paddingVertical: 20, flexDirection: 'row'}}>
+            <View style={{flex: 1, alignItems: 'flex-start', justifyContent: 'center'}}>
+              <Icon name="group-add"/>
+            </View>
+
+            <View style={{width: wp('70%')}}>
+              <Text>
+                Recommended count
+              </Text>
+
+              <Picker
+                selectedValue={recommended.selectedCount}
+                mode="dialog"
+                style={[
+                  {
+                    flex: 1,
+                    height: 20,
+                    width: wp('35%'),
+                    // color: '#979797',
+                    color: 'transparent',
+                    opacity: 0,
+                    // transform: ([{scale: 0.8}]),
+                    justifyContent: 'flex-end',
+                    marginLeft: -20
+                  }]}
+                itemStyle={{
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+                onValueChange={(selectedCount, itemIndex) => this.setRecommendedCount(selectedCount)}>
+                {recommended.count.map((item, index) => {
+                    return (<Picker.Item key={`pickerItem-${index}`} label={item} value={item}/>);
+                  }
+                )}
+              </Picker>
+
+              <Text style={{
+                color: '#979797',
+                position: 'absolute',
+                top: 20,
+                fontSize: 12
+              }}> {recommended.selectedCount + ' users'}</Text>
+
+            </View>
           </View>
 
-          <View>
-            <Text>
+
+          <View style={{borderBottomWidth: 1, borderColor: '#e6e6e6'}}/>
+
+
+          <View style={{flex: 1, paddingVertical: 20}}>
+            <Text style={{color: '#979797'}}>
               Notifications
             </Text>
           </View>
 
-          <View>
-            <Text>
-              Show notifications
-            </Text>
-            <Switch title="Show notifications" onValueChange={()=>this.setState({allowPushNotifications: !this.state.allowPushNotifications})} value={this.state.allowPushNotifications}/>
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <View style={{flex: 1, alignItems: 'flex-start', justifyContent: 'center'}}>
+              <Icon name="notifications"/>
+            </View>
+
+            <View style={{width: wp('70%'), flexDirection: 'row', alignItems: 'center'}}>
+              <Text>
+                Show notifications
+              </Text>
+
+              <Switch
+                style={{marginLeft: 20}}
+                label="Show notifications"
+                onValueChange={() => {
+                  this.showNotifications(notifications.isShown)
+                }}
+                value={notifications.isShown}/>
+            </View>
           </View>
 
-          <View>
-            <Text>
-              Notification delay
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <View style={{flex: 1, alignItems: 'flex-start', justifyContent: 'center'}}>
+              <Icon name="notifications-paused"/>
+            </View>
+
+            <View style={{width: wp('70%'), flexDirection: 'row', alignItems: 'center'}}>
+              <Text style={{paddingVertical: 20}}>
+                Notification delay
+              </Text>
+            </View>
+          </View>
+
+          <View style={{borderBottomWidth: 1, borderColor: '#e6e6e6'}}/>
+
+          <View style={{flex: 1, paddingVertical: 20}}>
+            <Text style={{color: '#979797'}}>
+              System
             </Text>
           </View>
 
-          <View>
-            <Text>
-             System
-            </Text>
-            <Text>
-             Language
-            </Text>
+          <View style={{paddingVertical: 20, flexDirection: 'row'}}>
+            <View style={{flex: 1, alignItems: 'flex-start', justifyContent: 'center'}}>
+              <Icon name="language"/>
+            </View>
+
+            <View style={{width: wp('70%'), flexDirection: 'row', alignItems: 'center'}}>
+              <Text>
+                Language
+              </Text>
+            </View>
           </View>
 
         </View>
