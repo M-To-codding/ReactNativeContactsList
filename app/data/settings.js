@@ -1,21 +1,20 @@
 const settings = {
   recommended: {
-    title:'Recommended',
-    text: 'Recomended count',
-    count: ['5 users', '10 users', '15 users', '20 users'],
-    key: 'set-01'
+    count: ['5', '10', '15', '20'],
+    selectedCount: '10 users'
   },
   notifications: {
-    title:'Notifications',
-    text: 'Show Notifications',
-    key: 'set-02',
-    childSetting: {
-      title: 'Notifications Delay',
-      text: 'Notification delay',
+    isShown: false,
+    notificationsDelay: {
+      isEnabled: false,
       count: ['15', '30', '45', '60'],
-      key: 'set-001',
-    }
-  }
+      selectedCount: '15'
+    },
+  },
+  languge: {
+    count: ['15', '30', '45', '60'],
+    selectedCount: '15'
+  },
 }
 
 export default settings;
