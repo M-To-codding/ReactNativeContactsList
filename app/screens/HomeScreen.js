@@ -61,12 +61,28 @@ export default class HomeScreen extends React.Component {
     });
   }
 
-  getSavedData(){
+  componentDidUpdate(prevProps, prevState){
+
+    if(this.props.screenProps.homeScreenUpdate) {
+
+      this.setState({
+        loading: true
+      })
+
+      setTimeout(() => {
+        this.getSavedData()
+      }, 200);
+      this.props.screenProps.homeScreenUpdate = false
+    }
+
+  }
+
+  getSavedData() {
     this._isMounted = true;
 
     var that = this;
     getData().then((response) => {
-      console.log('checkUpdates')
+      console.log('checkUpdates');
 
       console.log(JSON.parse(response))
       if (this._isMounted && response) {
@@ -79,10 +95,6 @@ export default class HomeScreen extends React.Component {
     });
   }
 
-  // onNavigationStateChange(){
-  //
-  // }
-
   componentWillMount() {
     this._isMounted = true;
   }
@@ -92,15 +104,14 @@ export default class HomeScreen extends React.Component {
   }
 
   checkUpdates(updated) {
-    if(updated) {
-      setTimeout(()=>{
-      this.getSavedData()
-    }, 200)
+    if (updated) {
+      setTimeout(() => {
+        this.getSavedData()
+      }, 200)
     }
   }
 
   render() {
-
     const {contacts, loading, error} = this.state;
 
     if (loading) return (<View style={styles.welcomeContainer}><Text>Home</Text><Text> Loading...</Text></View>);
@@ -125,7 +136,8 @@ export default class HomeScreen extends React.Component {
           </View>
 
           <View>
-            <ContactsList navigation={this.props.navigation} savedContacts={contacts} isSavedContacts={true} checkUpdates={this.checkUpdates.bind(this)}/>
+            <ContactsList navigation={this.props.navigation} savedContacts={contacts} isSavedContacts={true}
+                          checkUpdates={this.checkUpdates.bind(this)}/>
           </View>
 
         </ScrollView>
