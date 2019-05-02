@@ -3,9 +3,10 @@ import Settings from '../components/Settings/Settings';
 
 
 export default class SettingsScreen extends React.Component {
-  static navigationOptions = {
-   header: null
-  };
+
+  static navigationOptions = ({
+    header: null,
+  });
 
   render() {
     /* Go ahead and delete ExpoConfigView and replace it with your

@@ -58,12 +58,5 @@ export default createBottomTabNavigator({
     HomeStack,
     ContactsStack: ContactsStack,
     SettingsStack,
-  },
-  {
-    tabBarOptions: {
-      onTabPress: () => {
-        console.log('ContactsListScreen tab pressed');
-      }
-    }
   }
 );
