@@ -4,6 +4,8 @@ import {FlatList, ScrollView, TouchableOpacity, View, Text, Picker, Switch} from
 import {Avatar, List, ListItem, Icon} from "react-native-elements";
 import {widthPercentageToDP as wp} from "react-native-responsive-screen";
 
+import ModalSelector from 'react-native-modal-selector';
+
 import settings from './../../data/settings';
 import getAppSettings from './../../actions/getAppSettings';
 import setAppSettings from './../../actions/setAppSettings';
@@ -15,10 +17,11 @@ export default class Settings extends React.Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
       settings: {},
       isFetching: true,
+      shouldAppUpdate: false,
+      componentText: this.props.languageData
     }
   }
 
@@ -30,27 +33,49 @@ export default class Settings extends React.Component {
     const that = this;
 
     getAppSettings().then((response) => {
-      console.log('response');
-      console.log(response);
 
       if (response) {
         that.setState({
           settings: JSON.parse(response),
-          isFetching: false
+          isFetching: false,
+          shouldAppUpdate: false
         })
       }
+
     })
+  }
+
+  setLanguage(item) {
+    let settings = {...this.state.settings};
+    settings.language = item.const;
+
+    this.setState({
+      settings,
+      isFetching: true,
+      shouldAppUpdate: true
+    });
+
+    setTimeout(() => {
+      setAppSettings(this.state.settings);
+      this.getSettings();
+    }, 100)
+
   }
 
   componentDidMount() {
     this.getSettings();
   }
 
+  componentWillUnmount(){
+    this.setState({
+      isFetching: false,
+      shouldAppUpdate: false
+    });
+  }
+
   setRecommendedCount(count) {
     let settings = {...this.state.settings};
     settings.recommended.selectedCount = count;
-    console.log('recommended.selectedCount');
-    console.log(settings);
 
     this.setState({
       settings,
@@ -58,7 +83,7 @@ export default class Settings extends React.Component {
     });
 
     setTimeout(() => {
-      setAppSettings(this.state.settings);
+      setAppSettings(settings);
       this.getSettings();
     }, 50)
   }
@@ -86,16 +111,34 @@ export default class Settings extends React.Component {
     setAppSettings(this.state.settings);
   }
 
-  renderRows(onPress) {
-    if (this.state.isFetching) {
-      return <Text> </Text>
+  componentDidUpdate(prevProps, prevState) {
+    if(this.state.shouldAppUpdate) {
+      this.props.checkSettingsScreenUpdates(true);
+
+      this.setState({
+        shouldAppUpdate: false
+      })
     }
 
+    if(prevProps.languageData !== this.props.languageData){
+      console.log('prevPropsSettings')
+      console.log(prevProps)
+      console.log(this.props)
+
+      this.setState({
+        componentText:  this.props.languageData,
+        isFetching: true
+      })
+
+    }
+  }
+
+  renderRows() {
 
     let recommended = this.state.settings.recommended;
     let notifications = this.state.settings.notifications;
-    console.log('settings')
-    console.log(recommended.selectedCount)
+    const languages = [{label: 'English', key:"lang-en", const: "en"}, {label: 'Ukrainian', key:"lang-ua", const: "ua"}];
+    const componentText = this.state.componentText.settings_screen;
 
     return (
       <View>
@@ -104,7 +147,7 @@ export default class Settings extends React.Component {
 
           <View>
             <Text style={{color: '#979797'}}>
-              Recommended
+              {componentText.recommended.title}
             </Text>
           </View>
 
@@ -115,7 +158,7 @@ export default class Settings extends React.Component {
 
             <View style={{width: wp('70%')}}>
               <Text>
-                Recommended count
+                {componentText.recommended.option.title}
               </Text>
 
               <Picker
@@ -149,7 +192,7 @@ export default class Settings extends React.Component {
                 position: 'absolute',
                 top: 20,
                 fontSize: 12
-              }}> {recommended.selectedCount + ' users'}</Text>
+              }}> {recommended.selectedCount +' '+ componentText.recommended.option.text_pattern}</Text>
 
             </View>
           </View>
@@ -160,7 +203,7 @@ export default class Settings extends React.Component {
 
           <View style={{flex: 1, paddingVertical: 20}}>
             <Text style={{color: '#979797'}}>
-              Notifications
+              {componentText.notifications.title}
             </Text>
           </View>
 
@@ -171,7 +214,7 @@ export default class Settings extends React.Component {
 
             <View style={{width: wp('70%'), flexDirection: 'row', alignItems: 'center'}}>
               <Text>
-                Show notifications
+                {componentText.notifications.option.title}
               </Text>
 
               <Switch
@@ -191,7 +234,7 @@ export default class Settings extends React.Component {
 
             <View style={{width: wp('70%'), flexDirection: 'row', alignItems: 'center'}}>
               <Text style={{paddingVertical: 20}}>
-                Notification delay
+                {componentText.notifications.option.child_option.title}
               </Text>
             </View>
           </View>
@@ -200,7 +243,7 @@ export default class Settings extends React.Component {
 
           <View style={{flex: 1, paddingVertical: 20}}>
             <Text style={{color: '#979797'}}>
-              System
+              {componentText.system.title}
             </Text>
           </View>
 
@@ -210,9 +253,12 @@ export default class Settings extends React.Component {
             </View>
 
             <View style={{width: wp('70%'), flexDirection: 'row', alignItems: 'center'}}>
-              <Text>
-                Language
-              </Text>
+              <ModalSelector
+                selectedValue={componentText.system.language}
+                data={languages}
+                selectStyle={{borderColor: 'transparent'}}
+                initValue= {componentText.system.language}
+                onChange={(item)=>{ `${item.label} (${item.key})`; this.setLanguage(item)}} />
             </View>
           </View>
 
@@ -222,6 +268,11 @@ export default class Settings extends React.Component {
   }
 
   render() {
+
+    if (this.state.isFetching) {
+      return <Text> </Text>
+    }
+
     const settingsLayout = this.renderRows();
 
     return (
