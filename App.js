@@ -3,31 +3,85 @@ import {Platform, StatusBar, StyleSheet, View} from 'react-native';
 import {AppLoading, Asset, Font, Icon} from 'expo';
 import AppNavigator from './app/navigation/AppNavigator';
 
+import getAppSettings from './app/actions/getAppSettings';
+
 export default class App extends React.Component {
+
+  lang = {
+    en: require('./app/languages/en.json'),
+    ua: require('./app/languages/ua.json'),
+  }
+
   state = {
     isLoadingComplete: false,
-    homeScreenUpdate: false
+    homeScreenUpdate: false,
+    language: 'en',
+    languageData: this.lang.en
   };
 
   static navigationOptions = ({
     header: null,
   });
 
+  checkSettingsScreenUpdates(shouldUpdate) {
+
+    if (shouldUpdate) {
+      setTimeout(() => {
+        this.getSettings();
+
+        this.setState({
+          isLoadingComplete: false,
+          languageData: this.handleLanguageJson(this.state.language)
+        })
+      }, 50)
+    }
+  }
+
   checkPressing(prevState, newState) {
 
     if (prevState.routes[0].index === 1 && newState.routes[0].index === 0) {
-      // this.setState({isLoadingComplete: false});
-
-      console.log('routes')
-      console.log(prevState.routes[0].index)
-      console.log(newState.routes[0].index)
-      console.log(window)
-
       this.setState({
         homeScreenUpdate: true
       })
     }
 
+  }
+
+  componentDidMount() {
+    this.getSettings();
+  }
+
+  componentWillUnmount() {
+    this.setState({
+      isLoadingComplete: true,
+      homeScreenUpdate: false
+    })
+  }
+
+  handleLanguageJson(item) {
+    let currentLang = '';
+
+    if (item === 'en') {
+      currentLang = this.lang.en;
+    } else {
+      currentLang = this.lang.ua;
+    }
+
+    return currentLang;
+  }
+
+  getSettings() {
+    const that = this;
+
+    getAppSettings().then((response) => {
+      let data = JSON.parse(response);
+      if (response) {
+        that.setState({
+          language: data.language,
+          languageData: this.handleLanguageJson(data.language)
+        })
+      }
+    })
   }
 
   render() {
@@ -45,7 +99,11 @@ export default class App extends React.Component {
           {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" animated={true} backgroundColor="#000000"/>}
           {Platform.OS === 'android' && <StatusBar barStyle="dark-content" animated={true} backgroundColor="#000000"/>}
 
-          <AppNavigator onNavigationStateChange={this.checkPressing.bind(this)} screenProps={{homeScreenUpdate: this.state.homeScreenUpdate}}/>
+          <AppNavigator onNavigationStateChange={this.checkPressing.bind(this)} screenProps={{
+            homeScreenUpdate: this.state.homeScreenUpdate,
+            checkSettingsScreenUpdates: this.checkSettingsScreenUpdates.bind(this),
+            languageData: this.state.languageData
+          }}/>
         </View>
       );
     }
@@ -74,7 +132,7 @@ export default class App extends React.Component {
   };
 
   _handleFinishLoading = () => {
-    this.setState({ isLoadingComplete: true });
+    this.setState({isLoadingComplete: true});
   };
 }
 
