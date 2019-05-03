@@ -24,8 +24,6 @@ export class ContactsList extends React.Component {
   constructor(props) {
     super(props);
 
-    console.log(this.props)
-
     this.state = {
       isSavedContacts: props.isSavedContacts,
       contacts: {},

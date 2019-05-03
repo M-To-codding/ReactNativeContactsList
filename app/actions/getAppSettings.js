@@ -9,8 +9,6 @@ const getAppSettings = async () => {
     const settingsData = await AsyncStorage.getItem('settingsData');
 
     if (settingsData ) {
-      console.log('settingsData')
-      console.log(settingsData)
       return settingsData;
     }
 
