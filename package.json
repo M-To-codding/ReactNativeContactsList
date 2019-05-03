@@ -17,9 +17,10 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-datepicker": "^1.7.2",
     "react-native-elements": "^0.19.1",
-    "react-native-image-header-scroll-view": "^0.10.1",
-    "react-native-responsive-screen": "^1.2.1",
-    "react-navigation": "^3.6.1"
+    "react-native-image-header-scroll-view": "^0.10.2",
+    "react-native-modal-selector": "^1.0.3",
+    "react-native-responsive-screen": "^1.2.2",
+    "react-navigation": "^3.9.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",
