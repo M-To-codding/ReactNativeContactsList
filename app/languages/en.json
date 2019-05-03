@@ -1,0 +1,40 @@
+{
+  "nav_tabs": {
+    "home": "Saved",
+    "contacts": "All contacts",
+    "settings": "Settings"
+  },
+  "settings_screen": {
+    "recommended": {
+      "title": "Recommended",
+      "option": {
+        "title": "Recommended count",
+        "text_pattern": "users"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "option": {
+        "title": "Show notifications",
+        "child_option": {
+          "title": "Notification delay",
+          "text_pattern": "Notification will shown every min"
+        }
+      }
+    },
+    "system": {
+      "title": "System",
+      "language": "Language"
+    }
+  },
+  "contacts_list": "There is no contacts yet",
+  "deleting_prompt": {
+    "title": "Delete contact?",
+    "subtitle": "This action can't be undone"
+  },
+  "buttons": {
+    "button_delete": "DELETE",
+    "button_cancel": "CANCEL",
+    "button_create": "CREATE"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "nav_tabs": {
+    "home": "Збережені",
+    "contacts": "Всі контакти",
+    "settings": "Налаштування"
+  },
+  "settings_screen": {
+    "recommended": {
+      "title": "Рекомендації",
+      "option": {
+        "title": "Кількість рекомендацій",
+        "text_pattern": "користувачів"
+      }
+    },
+    "notifications": {
+      "title": "Сповіщення",
+      "option": {
+        "title": "Показувати сповіщення",
+        "child_option": {
+          "title": "Затримка сповіщень",
+          "text_pattern": "Сповіщення показуються кожні хвилин"
+        }
+      }
+    },
+    "system": {
+      "title": "Система",
+      "language": "Мова"
+    }
+  },
+  "contacts_list": "Ще не збережено жодного контакту",
+  "deleting_prompt": {
+    "title": "Видалити контакт?",
+    "subtitle": "Цю дію неможливо відмінити"
+  },
+  "buttons": {
+    "button_delete": "ВИДАЛИТИ",
+    "button_cancel": "ВІДМІНА",
+    "button_create": "ДОДАТИ"
+  }
+}
