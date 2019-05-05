@@ -19,15 +19,21 @@ export default class ProfileButton extends React.Component {
   }
 
   addContact(contact, pressHandler) {
-    if (this.state.saved) {
-      return;
-    }
+    // if (this.state.saved) {
+    //   return;
+    // }
+    //
+    // if (contact.saved) {
+    //   return;
+    // }
 
+    // contact.saved = !this.state.saved;
     if (contact.saved) {
-      return;
+      contact.login.uuid += '1';
+    } else {
+      contact.saved = true;
     }
 
-    contact.saved = !this.state.saved;
     this.setState({
       saved: contact.saved
     });
@@ -66,7 +72,8 @@ export default class ProfileButton extends React.Component {
       const key = 'btn-' + index;
       const saveContact = btn.onPressBtn;
       const user = this.state.user;
-      let styleForAddContactBtn = this.state.user.saved ? buttonsStyles.disabledBtn : '';
+      // let styleForAddContactBtn = this.state.user.saved ? buttonsStyles.disabledBtn : '';
+      let styleForAddContactBtn = '';
       let onPressHandler = saveContact ? () => this.addContact(user, saveContact) : () => Linking.openURL(linkingUrl);
 
 

@@ -25,18 +25,37 @@ export default class Profile extends React.Component {
       date: user.dob.date,
       phone: user.phone,
       email: user.email,
-      saved: user.saved
+      saved: user.saved,
+      editable: user.editable
     }
   }
 
+  // updateContact(contact) {
+  //   let
+  //
+  //   storeData(contact);
+  //   this.props.navigation.state.params.checkUpdates(true);
+  //   this.props.navigation.state.params.handleChackedContactsInList(contact.login.uuid, 'saved');
+  // }
+
   saveContact(contact) {
+
+    contact.name.first = this.state.name;
+    contact.name.last = this.state.lastName;
+    contact.gender = this.state.gender;
+    contact.dob.date = this.state.date;
+    contact.phone = this.state.phone;
+    contact.email = this.state.email;
+
     storeData(contact);
     this.props.navigation.state.params.checkUpdates(true);
+    this.props.navigation.state.params.handleCheckedContactsInList(contact.login.uuid, 'saved');
   }
 
   removeContact(id) {
     removeData(id);
     this.props.navigation.state.params.checkUpdates(true);
+    this.props.navigation.state.params.handleCheckedContactsInList(id, 'deleted');
   }
 
   handleProfileButtons() {
@@ -60,8 +79,16 @@ export default class Profile extends React.Component {
     return container;
   }
 
+
   render() {
     const profileButtons = this.handleProfileButtons();
+    let disabledInputStyle = '';
+    let editableInput = true;
+
+    if (!this.state.editable && !this.state.saved) {
+      disabledInputStyle = {backgroundColor: 'transparent',color: '#e1e1e1'};
+      editableInput = false;
+    }
 
     return (
 
@@ -74,29 +101,32 @@ export default class Profile extends React.Component {
             <Text style={this.state.profileStyles.labelStyle}>Name</Text>
             <TextInput
               label="Name"
-              style={this.state.profileStyles.textInput}
+              style={[this.state.profileStyles.textInput, disabledInputStyle]}
               onChangeText={(name) => this.setState({name})}
               underlineColorAndroid={"#c1c1c1"}
               value={this.state.name}
               shake={true}
+              editable={editableInput}
             />
           </View>
 
           <View>
             <Text style={this.state.profileStyles.labelStyle}>Surname</Text>
             <TextInput
-              style={this.state.profileStyles.textInput}
+              style={[this.state.profileStyles.textInput, disabledInputStyle]}
               label="Surname"
               onChangeText={(lastName) => this.setState({lastName})}
               underlineColorAndroid={"#c1c1c1"}
               value={this.state.lastName}
               shake={true}
+              editable={editableInput}
             />
           </View>
 
           <View style={{flexDirection: "row"}}>
             <View>
               <Picker
+                enabled={editableInput}
                 selectedValue={this.state.gender}
                 style={[
                   this.state.profileStyles.textInput,
@@ -105,7 +135,9 @@ export default class Profile extends React.Component {
                     width: wp('48%'),
                     borderBottomWidth: 1,
                     borderColor: '#c1c1c1',
-                  }]}
+                  },
+                  disabledInputStyle
+                ]}
                 itemStyle={{
                   borderTopWidth: 1,
                   borderTopColor: '#000',
@@ -137,6 +169,7 @@ export default class Profile extends React.Component {
             <View>
               <Text style={this.state.profileStyles.labelStyle}>Birthday: </Text>
               <DatePicker
+                disabled={!editableInput}
                 date={this.state.date}
                 mode="date"
                 placeholder="select date"
@@ -153,7 +186,10 @@ export default class Profile extends React.Component {
                     alignItems: 'stretch',
                     justifyContent: 'flex-end',
                     width: wp('48%'),
-                  }],
+                  },
+                    disabledInputStyle
+                  ],
+                  dateTouchBody: {disabledInputStyle}
                 }}
                 onDateChange={(date) => {
                   this.setState({date: date})
@@ -165,7 +201,8 @@ export default class Profile extends React.Component {
           <View>
             <Text style={this.state.profileStyles.labelStyle}>Phone: </Text>
             <TextInput
-              style={this.state.profileStyles.textInput}
+              editable={editableInput}
+              style={[this.state.profileStyles.textInput, disabledInputStyle]}
               onChangeText={(phone) => this.setState({phone})}
               underlineColorAndroid={'#c1c1c1'}
               value={this.state.phone}
@@ -176,7 +213,8 @@ export default class Profile extends React.Component {
           <View>
             <Text style={this.state.profileStyles.labelStyle}>E-mail: </Text>
             <TextInput
-              style={this.state.profileStyles.textInput}
+              editable={editableInput}
+              style={[this.state.profileStyles.textInput, disabledInputStyle]}
               onChangeText={(email) => this.setState({email})}
               underlineColorAndroid={'#c1c1c1'}
               value={this.state.email}
