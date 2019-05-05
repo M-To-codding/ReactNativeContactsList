@@ -121,9 +121,6 @@ export default class Settings extends React.Component {
     }
 
     if(prevProps.languageData !== this.props.languageData){
-      console.log('prevPropsSettings')
-      console.log(prevProps)
-      console.log(this.props)
 
       this.setState({
         componentText:  this.props.languageData,

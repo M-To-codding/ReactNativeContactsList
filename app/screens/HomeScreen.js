@@ -35,11 +35,9 @@ export default class HomeScreen extends React.Component {
     return {
       header: null,
       tabBarOnPress({navigation, defaultHandler}) {
-        console.log('ContactsListScreen tab pressed');
         defaultHandler();
       },
       onTabPress({navigation, defaultHandler}) {
-        console.log('ContactsListScreen tab pressed');
         defaultHandler();
       }
     }
