@@ -37,6 +37,7 @@ export default profileStyles = StyleSheet.create({
     top: -5,
     fontSize: 12,
     color: '#898989',
+    zIndex: 2
   },
   textInput: {
     height: 55,
