@@ -55,7 +55,8 @@ export class ContactsList extends React.Component {
   _onPress = (item) => {
     this.props.navigation.push("Profile", {
       user: item,
-      checkUpdates: this.checkUpdates.bind(this)
+      checkUpdates: this.checkUpdates.bind(this),
+      handleCheckedContactsInList: this.handleCheckedContactsInList.bind(this)
     });
   }
 
@@ -65,7 +66,7 @@ export class ContactsList extends React.Component {
 
   checkUpdates(updatesChecked) {
 
-    this.props.checkUpdates(updatesChecked)
+    this.props.checkUpdates(updatesChecked);
     this.setState({
       updatesChecked
     });
@@ -83,12 +84,34 @@ export class ContactsList extends React.Component {
 
     if (this.state.updatesChecked && deepDiffer(this.props, prevProps)) {
 
-      this._isMounted = true
+      this._isMounted = true;
+
       this.setState({
         contacts: this.props.savedContacts,
         updatesChecked: false
       })
     }
+  }
+
+  handleCheckedContactsInList(id) {
+    let contacts = this.state.contacts;
+
+    this.setState({
+      isFetching: true
+    })
+
+    contacts.forEach((item) => {
+      if (item.login.uuid === id) {
+        item.bgColor = true;
+      }
+    });
+
+    setTimeout(() => {
+      this.setState({
+        contacts,
+        isFetching: false
+      })
+    }, 100);
   }
 
   componentWillMount() {
@@ -129,8 +152,13 @@ export class ContactsList extends React.Component {
     let contact = item;
     let contactStyle = '';
 
-    if (contact.saved && this.props.navigation.state.routeName !== 'Home') {
-      contactStyle = {backgroundColor: '#aaa'}
+    if (contact.saved && this.props.navigation.state.routeName !== 'Home' && item.bgColor) {
+      contactStyle = {backgroundColor: '#bebebe'};
+      contact.editable = true;
+    }
+
+    if (!contact.saved) {
+      contact.editable = false;
     }
 
     return (
@@ -150,6 +178,10 @@ export class ContactsList extends React.Component {
     const {contacts, isFetching, error} = this.state;
 
     if (isFetching) return <View><Text> Loading...</Text></View>;
+
+    if (contacts.length <= 0) return (<View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <Text style={{color: '#bebebe', fontWeight: 'bold'}}>There is not saved contacts yet</Text>
+    </View>);
 
     if (error) return <View><Text>{e.message}</Text></View>;
 
