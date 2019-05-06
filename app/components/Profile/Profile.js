@@ -11,45 +11,104 @@ import storeData from "../../actions/storeDataInAsyncStorage";
 import removeData from "../../actions/removeDataFromAsyncStorage";
 
 
+let userData = {
+  name: {
+    first: '',
+    last: '',
+  },
+  gender: '',
+  dob: {
+    date: ''
+  },
+  phone: '',
+  email: '',
+  login: {
+    uuid: ''
+  },
+  saved: true,
+  isNewContact: true
+}
+
 export default class Profile extends React.Component {
   constructor(props) {
     super(props);
     const user = props.user;
 
-    this.state = {
-      user: user,
-      profileStyles: props.profileStyles,
-      name: user.name.first,
-      lastName: user.name.last,
-      gender: user.gender,
-      date: user.dob.date,
-      phone: user.phone,
-      email: user.email,
-      saved: user.saved,
-      editable: user.editable
+    if (user) {
+
+      this.state = {
+        user: user,
+        profileStyles: props.profileStyles,
+        name: user.name.first,
+        lastName: user.name.last,
+        gender: user.gender,
+        date: user.dob.date,
+        phone: user.phone,
+        email: user.email,
+        saved: user.saved,
+        editable: user.editable
+      }
+    } else {
+
+      this.state = {
+        user: userData,
+        profileStyles: props.profileStyles,
+        name: '',
+        lastName: '',
+        gender: 'male',
+        date: '',
+        phone: '',
+        email: '',
+        saved: true,
+        editable: true
+      }
     }
   }
 
-  // updateContact(contact) {
-  //   let
-  //
-  //   storeData(contact);
-  //   this.props.navigation.state.params.checkUpdates(true);
-  //   this.props.navigation.state.params.handleChackedContactsInList(contact.login.uuid, 'saved');
-  // }
-
   saveContact(contact) {
+    let newContact = this.state.user;
 
-    contact.name.first = this.state.name;
-    contact.name.last = this.state.lastName;
-    contact.gender = this.state.gender;
-    contact.dob.date = this.state.date;
-    contact.phone = this.state.phone;
-    contact.email = this.state.email;
+    if (!newContact.isNewContact && !this.props.navigation.state.params.isNewContact) {
+      newContact = contact;
 
-    storeData(contact);
+      newContact.name.first = this.state.name;
+      newContact.name.last = this.state.lastName;
+      newContact.gender = this.state.gender;
+      newContact.dob.date = this.state.date;
+      newContact.phone = this.state.phone;
+      newContact.email = this.state.email;
+
+      storeData(newContact);
+      if(this.props.navigation.state.params.handleCheckedContactsInList) {
+        this.props.navigation.state.params.handleCheckedContactsInList(newContact.login.uuid, 'saved');
+      }
+
+    } else {
+
+      newContact.name.first = this.state.name.length > 1 ? this.state.name : 'Unknown';
+      newContact.name.last = this.state.lastName;
+      newContact.gender = this.state.gender;
+      newContact.dob.date = this.state.date;
+      newContact.phone = this.state.phone;
+      newContact.email = this.state.email;
+      newContact.saved = true;
+      newContact.picture = {
+        large: 'http://www.sbsc.in/images/dummy-profile-pic.png',
+        medium: 'http://www.sbsc.in/images/dummy-profile-pic.png'
+      };
+      newContact.login.uuid = '_01_';
+
+      newContact.isNewContact = false;
+
+      for (let i = 0; i < 4; i++) {
+        newContact.login.uuid += Math.random();
+      }
+
+      storeData(newContact);
+
+    }
+
     this.props.navigation.state.params.checkUpdates(true);
-    this.props.navigation.state.params.handleCheckedContactsInList(contact.login.uuid, 'saved');
   }
 
   removeContact(id) {
@@ -60,6 +119,7 @@ export default class Profile extends React.Component {
 
   handleProfileButtons() {
     let btnsData;
+    let user;
 
     if (this.state.saved) {
       btnsData = setData(this.state, this.saveContact.bind(this), this.removeContact.bind(this));
@@ -67,14 +127,29 @@ export default class Profile extends React.Component {
       btnsData = setData(this.state, this.saveContact.bind(this));
     }
 
+
     let container = '';
 
-    // if (this.state.saved) {
-    container =
-      <View style={this.state.profileStyles.btnsContainer}>
-        <ProfileButton btnsData={btnsData} user={this.state.user} goBack={this.props.goBack}/>
-      </View>;
-    // }
+    if (!this.state.user.isNewContact && !this.props.navigation.state.params.isNewContact) {
+
+      container =
+        <View style={this.state.profileStyles.btnsContainer}>
+          <ProfileButton btnsData={btnsData} user={this.state.user} goBack={this.props.goBack}/>
+        </View>;
+
+    } else {
+
+      let state = this.state;
+      state.saveButton = true;
+      user = state.user;
+
+      btnsData = setData(state, this.saveContact.bind(this));
+
+      container =
+        <View style={this.state.profileStyles.btnsContainer}>
+          <ProfileButton btnsData={btnsData} user={user} goBack={this.props.goBack}/>
+        </View>;
+    }
 
     return container;
   }
@@ -86,7 +161,7 @@ export default class Profile extends React.Component {
     let editableInput = true;
 
     if (!this.state.editable && !this.state.saved) {
-      disabledInputStyle = {backgroundColor: 'transparent',color: '#e1e1e1'};
+      disabledInputStyle = {backgroundColor: 'transparent', color: '#e1e1e1'};
       editableInput = false;
     }
 
