@@ -4,6 +4,7 @@ import {
   BackHandler,
   StatusBar,
   RefreshControl,
+  Text
 } from 'react-native';
 import {NavigationActions, HeaderBackButton} from 'react-navigation';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -11,6 +12,7 @@ import HeaderImageScrollView, {TriggeringView} from 'react-native-image-header-s
 
 import profileStyles from '../assets/styles/Profile';
 import Profile from '../components/Profile/Profile';
+import CustomImagePicker from '../components/CustomImagePicker';
 
 
 export default class ProfileScreen extends React.Component {
@@ -23,11 +25,12 @@ export default class ProfileScreen extends React.Component {
 
     this.state = {
       refreshing: false,
-      user: user
+      user: user,
+      loading: true
     }
   }
 
-  checkUser(user){
+  checkUser(user) {
     this.setState({
       saved: user.saved
     })
@@ -64,19 +67,54 @@ export default class ProfileScreen extends React.Component {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
+  componentDidMount() {
+    this.setState({
+      loading: false
+    })
+  }
+
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+
+    this.setState({
+      loading: false
+    })
   }
 
   handleBackButtonClick(isDataChanged) {
-      if(isDataChanged) {
-        this.forceUpdate();
-      }
+    if (isDataChanged) {
+      this.forceUpdate();
+    }
     this.props.navigation.goBack(null);
     return true;
   }
 
+  setProfileImage(uri) {
+    let user = this.state.user;
+    let picture = {
+      large: uri,
+      medium: uri,
+    }
+
+    user.picture = picture;
+
+    this.setState({
+      user
+      // loading: true
+    })
+  }
+
   render() {
+    let user = this.state.user;
+    let photo =  'http://www.sbsc.in/images/dummy-profile-pic.png';
+
+    if(user) {
+      photo =  user.picture.large;
+    }
+
+    if (this.state.loading) {
+      return (<View style={profileStyles.container}><Text>Loading...</Text></View>);
+    }
 
     return (
 
@@ -87,6 +125,8 @@ export default class ProfileScreen extends React.Component {
           barStyle={"dark-content"}
           backgroundColor={"#000"}
         />
+
+        <CustomImagePicker setProfileImage={this.setProfileImage.bind(this)}/>
 
         <HeaderImageScrollView
           maxHeight={250}
@@ -99,7 +139,7 @@ export default class ProfileScreen extends React.Component {
           minOverlayOpacity={0.3}
           fadeOutForeground={true}
           foregroundParallaxRatio={2}
-          headerImage={{uri: this.state.user.picture.large}}
+          headerImage={{uri: photo}}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
@@ -108,8 +148,8 @@ export default class ProfileScreen extends React.Component {
             />
           }
           scrollViewBackgroundColor="#fff">
-
-          <Profile {...this.props} profileStyles={profileStyles} user={this.state.user} goBack={this.handleBackButtonClick.bind(this)}/>
+          <Profile {...this.props} profileStyles={profileStyles} user={this.state.user}
+                   goBack={this.handleBackButtonClick.bind(this)}/>
 
         </HeaderImageScrollView>
 
