@@ -166,7 +166,7 @@ export class ContactsList extends React.Component {
                         style={contactStyle}>
         <ListItem
           key={contact.login.uuid}
-          title={`${contact.name.first} ${contact.name.last}, dsfddfsasss`}
+          title={`${contact.name.first} ${contact.name.last}`}
           avatar={<Avatar large source={{uri: contact.picture.medium}}/>}
         />
       </TouchableOpacity>
@@ -179,7 +179,10 @@ export class ContactsList extends React.Component {
 
     if (isFetching) return <View><Text> Loading...</Text></View>;
 
-    if (contacts.length <= 0) return (<View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+          if(!contacts) return  <View><Text> Loading...</Text></View>;
+
+    if (contacts.length <= 0) return (
+      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text style={{color: '#bebebe', fontWeight: 'bold'}}>There is not saved contacts yet</Text>
     </View>);
 
@@ -188,7 +191,7 @@ export class ContactsList extends React.Component {
     return (
       <ScrollView
         style={{width: '100%'}}>
-        <View>
+        <View style={{position: 'relative'}}>
           <List>
             <FlatList
               data={contacts}
