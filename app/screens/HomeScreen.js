@@ -17,6 +17,7 @@ import {MonoText} from '../components/StyledText';
 import homeStyles from '../assets/styles/App';
 import getData from '../actions/getDataFromAsyncStorage';
 import {ContactsList} from "../components/ContactsList/ContactsList";
+import FloatingAddContactButton from "../components/FloatingAddContactButton";
 
 
 export default class HomeScreen extends React.Component {
@@ -102,6 +103,7 @@ export default class HomeScreen extends React.Component {
 
   checkUpdates(updated) {
     if (updated) {
+      this.props.screenProps.homeScreenUpdate = true;
       setTimeout(() => {
         this.getSavedData()
       }, 200)
@@ -128,9 +130,13 @@ export default class HomeScreen extends React.Component {
           <View>
             <ContactsList navigation={this.props.navigation} savedContacts={contacts} isSavedContacts={true}
                           checkUpdates={this.checkUpdates.bind(this)}/>
+
           </View>
 
         </ScrollView>
+
+        <FloatingAddContactButton navigation={this.props.navigation} isNewContact={true} checkUpdates={this.checkUpdates.bind(this)}/>
+
       </View>
     );
   }
