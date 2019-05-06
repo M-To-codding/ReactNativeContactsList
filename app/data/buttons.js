@@ -1,7 +1,6 @@
 import buttonsStyles from "../assets/styles/ProfileButtons";
 
 
-let btnsData = {};
 
 export function setData(props, saveContact, removeContact) {
   // removeContact = false
@@ -48,6 +47,18 @@ export function setData(props, saveContact, removeContact) {
       item.btnStyle = buttonsStyles.smallButton;
     })
 
+  }
+
+  if(props.saveButton) {
+    let btn = {
+      btnStyle: [buttonsStyles.button],
+      onPressBtn: saveContact,
+      iconName: 'person-add',
+      imgStyle: {width: 20, height: 20}
+    }
+
+    buttonsArr = [];
+    buttonsArr.push(btn);
   }
 
   return buttonsArr;
