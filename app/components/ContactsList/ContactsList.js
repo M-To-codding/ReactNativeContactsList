@@ -8,10 +8,16 @@ import {
   TouchableOpacity,
   Image,
   Button,
-  RefreshControl
+  RefreshControl,
+  Dimensions
 } from 'react-native';
 import {List, ListItem, Avatar} from 'react-native-elements';
 import deepDiffer from 'react-native/lib/deepDiffer';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
+import textHandlers from './../../helpers/textHandlers';
+
+import contactsStyles from './../../assets/styles/ContactsList'
 
 import {ExpoLinksView} from '@expo/samples';
 
@@ -25,6 +31,9 @@ export class ContactsList extends React.Component {
     super(props);
 
     this.state = {
+      layoutWidth: 0,
+      layoutHeight: 0,
+      orientation: 'landscape',
       isSavedContacts: props.isSavedContacts,
       contacts: {},
       refreshing: false,
@@ -32,6 +41,24 @@ export class ContactsList extends React.Component {
       isFetching: true,
       updatesChecked: false
     };
+  }
+
+  onLayout(e) {
+    const {width, height} = Dimensions.get('window')
+    console.log(width, height);
+    let orientation = '';
+
+    if(width > height) {
+      orientation = 'landscape'
+    } else {
+      orientation = 'portrait'
+    }
+
+    this.setState({
+      layoutWidth: width,
+      layoutHeight: height,
+      orientation: orientation,
+    })
   }
 
   _onRefresh() {
@@ -71,6 +98,11 @@ export class ContactsList extends React.Component {
       updatesChecked
     });
     this.forceUpdate()
+  }
+
+  capitalizeText = (string) => {
+    if (typeof string !== 'string') return ''
+    return string.charAt(0).toUpperCase() + string.slice(1)
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -119,6 +151,8 @@ export class ContactsList extends React.Component {
     var that = this;
 
     if (this.state.isSavedContacts && this.props.savedContacts && this._isMounted) {
+      console.log('response');
+      console.log(this.props.savedContacts);
 
       this.setState({
         refreshing: false,
@@ -140,6 +174,7 @@ export class ContactsList extends React.Component {
         console.log(e);
         this.setState({isFetching: false, error: e})
       });
+      // container
 
     }
   }
@@ -150,10 +185,12 @@ export class ContactsList extends React.Component {
 
   renderRow({item}, onPress) {
     let contact = item;
-    let contactStyle = '';
+    let contactBg = '';
+    let landscapeListStyle = '';
+
 
     if (contact.saved && this.props.navigation.state.routeName !== 'Home' && item.bgColor) {
-      contactStyle = {backgroundColor: '#bebebe'};
+      contactBg = {backgroundColor: '#bebebe'};
       contact.editable = true;
     }
 
@@ -161,12 +198,20 @@ export class ContactsList extends React.Component {
       contact.editable = false;
     }
 
+    if (this.state.layoutWidth > this.state.layoutHeight) {
+      landscapeListStyle = {width: this.state.layoutWidth/2};
+    }
+
     return (
       <TouchableOpacity onPress={() => onPress(contact)}
-                        style={contactStyle}>
+                        style={[contactBg, landscapeListStyle]}>
         <ListItem
+          titleStyle={{ paddingEnd: 0, paddingStart: 1, textAlign: 'left', justifyContent: 'flex-end', alignItems: 'stretch'}}
+          style={{
+            paddingEnd: 0, paddingStart: 1
+          }}
           key={contact.login.uuid}
-          title={`${contact.name.first} ${contact.name.last}`}
+          title={`${textHandlers.capitalizeText(contact.name.first)} ${textHandlers.capitalizeText(contact.name.last)}`}
           avatar={<Avatar large source={{uri: contact.picture.medium}}/>}
         />
       </TouchableOpacity>
@@ -175,25 +220,39 @@ export class ContactsList extends React.Component {
 
   render() {
 
+    let styles = contactsStyles;
     const {contacts, isFetching, error} = this.state;
+    let columnsCount = 1;
+
+
+    if (this.state.layoutWidth > this.state.layoutHeight) {
+      columnsCount = 2;
+    }
 
     if (isFetching) return <View><Text> Loading...</Text></View>;
 
-          if(!contacts) return  <View><Text> Loading...</Text></View>;
+    if (!contacts) return <View><Text> Loading...</Text></View>;
 
     if (contacts.length <= 0) return (
-      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text style={{color: '#bebebe', fontWeight: 'bold'}}>There is not saved contacts yet</Text>
-    </View>);
+      <View style={styles.container}>
+        <Text style={styles.emptyContactsText}>There is not saved contacts yet</Text>
+      </View>);
 
     if (error) return <View><Text>{e.message}</Text></View>;
 
     return (
       <ScrollView
-        style={{width: '100%'}}>
-        <View style={{position: 'relative'}}>
+        style={styles.scrollView}>
+        <View
+          onLayout={this.onLayout.bind(this)}
+          style={{flex: 1, position: 'relative'}}
+        >
           <List>
             <FlatList
+              style={{ flex: 1, position: 'relative'}}
+
+              numColumns={columnsCount}
+              key={columnsCount}
               data={contacts}
               renderItem={(item) => this.renderRow(item, this._onPress)}
               keyExtractor={item => item.login.uuid}
