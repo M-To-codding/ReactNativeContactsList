@@ -1,7 +1,14 @@
 import React from 'react';
-import {Platform, StatusBar, StyleSheet, View} from 'react-native';
+import {I18nManager, Platform, StatusBar, StyleSheet, View} from 'react-native';
 import {AppLoading, Asset, Font, Icon} from 'expo';
 import AppNavigator from './app/navigation/AppNavigator';
+
+try {
+  I18nManager.allowRTL(false);
+  I18nManager.forceRTL(false);
+} catch (e) {
+  console.log(e);
+}
 
 import getAppSettings from './app/actions/getAppSettings';
 
