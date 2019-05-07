@@ -4,6 +4,8 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import HeaderImageScrollView, {TriggeringView} from "react-native-image-header-scroll-view";
 import DatePicker from "react-native-datepicker";
 
+import textHandlers from "./../../helpers/textHandlers";
+
 
 import {setData} from "../../data/buttons";
 import ProfileButton from "../ProfileButton";
@@ -46,7 +48,8 @@ export default class Profile extends React.Component {
         phone: user.phone,
         email: user.email,
         saved: user.saved,
-        editable: user.editable
+        editable: user.editable,
+        layoutWidth: this.props.layoutWidth
       }
     } else {
 
@@ -60,7 +63,8 @@ export default class Profile extends React.Component {
         phone: '',
         email: '',
         saved: true,
-        editable: true
+        editable: true,
+        layoutWidth: this.props.layoutWidth
       }
     }
   }
@@ -79,7 +83,7 @@ export default class Profile extends React.Component {
       newContact.email = this.state.email;
 
       storeData(newContact);
-      if(this.props.navigation.state.params.handleCheckedContactsInList) {
+      if (this.props.navigation.state.params.handleCheckedContactsInList) {
         this.props.navigation.state.params.handleCheckedContactsInList(newContact.login.uuid, 'saved');
       }
 
@@ -154,11 +158,23 @@ export default class Profile extends React.Component {
     return container;
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.layoutWidth !== this.props.layoutWidth) {
+      console.log('layoutWidth')
+      console.log(prevProps)
+      console.log(this.props)
+          this.setState({
+            layoutWidth: this.props.layoutWidth
+          })
+    }
+  }
 
   render() {
     const profileButtons = this.handleProfileButtons();
     let disabledInputStyle = '';
     let editableInput = true;
+    const textAlign = {textAlign: 'left'};
+    const layoutWidth = this.state.layoutWidth;
 
     if (!this.state.editable && !this.state.saved) {
       disabledInputStyle = {backgroundColor: 'transparent', color: '#e1e1e1'};
@@ -167,7 +183,7 @@ export default class Profile extends React.Component {
 
     return (
 
-      <View style={[this.state.profileStyles.detailsContainer, {minHeight: hp('83%')}]}>
+      <View style={[this.state.profileStyles.detailsContainer, {minHeight: hp('83%'), width: this.state.layoutWidth}]}>
         <TriggeringView onHide={() => console.log("text hidden")}>
 
           {profileButtons}
@@ -176,7 +192,7 @@ export default class Profile extends React.Component {
             <Text style={this.state.profileStyles.labelStyle}>Name</Text>
             <TextInput
               label="Name"
-              style={[this.state.profileStyles.textInput, disabledInputStyle]}
+              style={[this.state.profileStyles.textInput, disabledInputStyle, textAlign]}
               onChangeText={(name) => this.setState({name})}
               underlineColorAndroid={"#c1c1c1"}
               value={this.state.name}
@@ -188,7 +204,7 @@ export default class Profile extends React.Component {
           <View>
             <Text style={this.state.profileStyles.labelStyle}>Surname</Text>
             <TextInput
-              style={[this.state.profileStyles.textInput, disabledInputStyle]}
+              style={[this.state.profileStyles.textInput, disabledInputStyle, textAlign]}
               label="Surname"
               onChangeText={(lastName) => this.setState({lastName})}
               underlineColorAndroid={"#c1c1c1"}
@@ -276,8 +292,10 @@ export default class Profile extends React.Component {
           <View>
             <Text style={this.state.profileStyles.labelStyle}>Phone: </Text>
             <TextInput
+              dataDetectorTypes='phoneNumber'
+              keyboardType='phone-pad'
               editable={editableInput}
-              style={[this.state.profileStyles.textInput, disabledInputStyle]}
+              style={[this.state.profileStyles.textInput, disabledInputStyle, textAlign]}
               onChangeText={(phone) => this.setState({phone})}
               underlineColorAndroid={'#c1c1c1'}
               value={this.state.phone}
@@ -288,8 +306,10 @@ export default class Profile extends React.Component {
           <View>
             <Text style={this.state.profileStyles.labelStyle}>E-mail: </Text>
             <TextInput
+              dataDetectorTypes='address'
+              keyboardType='email-address'
               editable={editableInput}
-              style={[this.state.profileStyles.textInput, disabledInputStyle]}
+              style={[this.state.profileStyles.textInput, disabledInputStyle, textAlign]}
               onChangeText={(email) => this.setState({email})}
               underlineColorAndroid={'#c1c1c1'}
               value={this.state.email}

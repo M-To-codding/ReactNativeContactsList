@@ -4,7 +4,7 @@ import {
   BackHandler,
   StatusBar,
   RefreshControl,
-  Text
+  Text, Dimensions
 } from 'react-native';
 import {NavigationActions, HeaderBackButton} from 'react-navigation';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -26,8 +26,29 @@ export default class ProfileScreen extends React.Component {
     this.state = {
       refreshing: false,
       user: user,
+      layoutWidth: 0,
+      layoutHeight: 0,
+      orientation: 'portrait',
       loading: true
     }
+  }
+
+  onLayout(e) {
+    const {width, height} = Dimensions.get('window')
+    console.log(width, height);
+    let orientation = '';
+
+    if(width > height) {
+      orientation = 'landscape'
+    } else {
+      orientation = 'portrait'
+    }
+
+    this.setState({
+      layoutWidth: width,
+      layoutHeight: height,
+      orientation: orientation,
+    })
   }
 
   checkUser(user) {
@@ -36,17 +57,6 @@ export default class ProfileScreen extends React.Component {
     })
   }
 
-  _onRefresh() {
-    this.setState({
-      refreshing: true,
-    });
-
-    setTimeout(() => {
-      this.setState({
-        refreshing: false,
-      });
-    }, 1000);
-  }
 
   static navigationOptions = ({navigation}) => {
     return {
@@ -107,6 +117,7 @@ export default class ProfileScreen extends React.Component {
   render() {
     let user = this.state.user;
     let photo =  'http://www.sbsc.in/images/dummy-profile-pic.png';
+    let widthOfLayout = this.state.layoutWidth;
 
     if(user) {
       photo =  user.picture.large;
@@ -118,7 +129,7 @@ export default class ProfileScreen extends React.Component {
 
     return (
 
-      <View style={profileStyles.container}>
+      <View style={profileStyles.container} onLayout={()=>this.onLayout()}>
         <StatusBar
           hidden={false}
           animated={true}
@@ -129,26 +140,21 @@ export default class ProfileScreen extends React.Component {
         <CustomImagePicker setProfileImage={this.setProfileImage.bind(this)}/>
 
         <HeaderImageScrollView
+          onDisplay={this.onLayout.bind(this)}
           maxHeight={250}
           minHeight={75}
           disableHeaderGrow={false}
           bounces={true}
+          width={widthOfLayout}
           overlayColor="#2b2b2b"
-          style={{width: wp("100%")}}
           maxOverlayOpacity={0.95}
           minOverlayOpacity={0.3}
           fadeOutForeground={true}
           foregroundParallaxRatio={2}
           headerImage={{uri: photo}}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh.bind(this)}
-              tintColor="white"
-            />
-          }
           scrollViewBackgroundColor="#fff">
-          <Profile {...this.props} profileStyles={profileStyles} user={this.state.user}
+
+          <Profile {...this.props} profileStyles={profileStyles} layoutWidth={widthOfLayout} user={this.state.user}
                    goBack={this.handleBackButtonClick.bind(this)}/>
 
         </HeaderImageScrollView>
