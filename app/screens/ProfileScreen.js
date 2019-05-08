@@ -4,7 +4,8 @@ import {
   BackHandler,
   StatusBar,
   RefreshControl,
-  Text, Dimensions
+  Text, Dimensions,
+  Image
 } from 'react-native';
 import {NavigationActions, HeaderBackButton} from 'react-navigation';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -13,6 +14,7 @@ import HeaderImageScrollView, {TriggeringView} from 'react-native-image-header-s
 import profileStyles from '../assets/styles/Profile';
 import Profile from '../components/Profile/Profile';
 import CustomImagePicker from '../components/CustomImagePicker';
+import {Avatar} from "react-native-elements";
 
 
 export default class ProfileScreen extends React.Component {
@@ -38,7 +40,7 @@ export default class ProfileScreen extends React.Component {
     console.log(width, height);
     let orientation = '';
 
-    if(width > height) {
+    if (width > height) {
       orientation = 'landscape'
     } else {
       orientation = 'portrait'
@@ -116,20 +118,55 @@ export default class ProfileScreen extends React.Component {
 
   render() {
     let user = this.state.user;
-    let photo =  'http://www.sbsc.in/images/dummy-profile-pic.png';
+    let photo = 'http://www.sbsc.in/images/dummy-profile-pic.png';
     let widthOfLayout = this.state.layoutWidth;
-
-    if(user) {
-      photo =  user.picture.large;
+    if (user) {
+      photo = user.picture.large;
     }
 
     if (this.state.loading) {
       return (<View style={profileStyles.container}><Text>Loading...</Text></View>);
     }
 
+    let mainContent = <HeaderImageScrollView
+      onDisplay={this.onLayout.bind(this)}
+      maxHeight={250}
+      minHeight={75}
+      disableHeaderGrow={false}
+      bounces={true}
+      width={widthOfLayout}
+      overlayColor="#2b2b2b"
+      maxOverlayOpacity={0.95}
+      minOverlayOpacity={0.3}
+      fadeOutForeground={true}
+      foregroundParallaxRatio={2}
+      headerImage={{uri: photo}}
+      scrollViewBackgroundColor="#fff">
+
+      <Profile {...this.props} profileStyles={profileStyles} layoutWidth={widthOfLayout} user={this.state.user}
+               goBack={this.handleBackButtonClick.bind(this)}/>
+
+    </HeaderImageScrollView>;
+
+
+    if (this.state.orientation === 'landscape') {
+      mainContent = <View
+        onLayout={this.onLayout.bind(this)} style={{flex: 1, flexDirection: 'row'}}>
+
+        <Image
+          source={{uri: photo}}
+          style={{height: this.state.layoutHeight, width: this.state.layoutWidth / 2.5}}
+        />
+
+        <Profile {...this.props} profileStyles={profileStyles} layoutWidth={widthOfLayout} user={this.state.user}
+                 goBack={this.handleBackButtonClick.bind(this)}/>
+
+      </View>
+    }
+
     return (
 
-      <View style={profileStyles.container} onLayout={()=>this.onLayout()}>
+      <View style={profileStyles.container} onLayout={() => this.onLayout()}>
         <StatusBar
           hidden={false}
           animated={true}
@@ -139,25 +176,7 @@ export default class ProfileScreen extends React.Component {
 
         <CustomImagePicker setProfileImage={this.setProfileImage.bind(this)}/>
 
-        <HeaderImageScrollView
-          onDisplay={this.onLayout.bind(this)}
-          maxHeight={250}
-          minHeight={75}
-          disableHeaderGrow={false}
-          bounces={true}
-          width={widthOfLayout}
-          overlayColor="#2b2b2b"
-          maxOverlayOpacity={0.95}
-          minOverlayOpacity={0.3}
-          fadeOutForeground={true}
-          foregroundParallaxRatio={2}
-          headerImage={{uri: photo}}
-          scrollViewBackgroundColor="#fff">
-
-          <Profile {...this.props} profileStyles={profileStyles} layoutWidth={widthOfLayout} user={this.state.user}
-                   goBack={this.handleBackButtonClick.bind(this)}/>
-
-        </HeaderImageScrollView>
+        {mainContent}
 
       </View>
     );

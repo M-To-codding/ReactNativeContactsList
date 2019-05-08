@@ -6,7 +6,6 @@ import DatePicker from "react-native-datepicker";
 
 import textHandlers from "./../../helpers/textHandlers";
 
-
 import {setData} from "../../data/buttons";
 import ProfileButton from "../ProfileButton";
 import storeData from "../../actions/storeDataInAsyncStorage";
@@ -49,7 +48,8 @@ export default class Profile extends React.Component {
         email: user.email,
         saved: user.saved,
         editable: user.editable,
-        layoutWidth: this.props.layoutWidth
+        layoutWidth: this.props.layoutWidth,
+        orientation: this.props.orientation
       }
     } else {
 
@@ -64,7 +64,8 @@ export default class Profile extends React.Component {
         email: '',
         saved: true,
         editable: true,
-        layoutWidth: this.props.layoutWidth
+        layoutWidth: this.props.layoutWidth,
+        orientation: this.props.orientation
       }
     }
   }
@@ -131,7 +132,6 @@ export default class Profile extends React.Component {
       btnsData = setData(this.state, this.saveContact.bind(this));
     }
 
-
     let container = '';
 
     if (!this.state.user.isNewContact && !this.props.navigation.state.params.isNewContact) {
@@ -163,9 +163,10 @@ export default class Profile extends React.Component {
       console.log('layoutWidth')
       console.log(prevProps)
       console.log(this.props)
-          this.setState({
-            layoutWidth: this.props.layoutWidth
-          })
+      this.setState({
+        layoutWidth: this.props.layoutWidth,
+        orientation: this.props.orientation
+      })
     }
   }
 
@@ -183,7 +184,7 @@ export default class Profile extends React.Component {
 
     return (
 
-      <View style={[this.state.profileStyles.detailsContainer, {minHeight: hp('83%'), width: this.state.layoutWidth}]}>
+      <View style={[this.state.profileStyles.detailsContainer, {minHeight: hp('83%'), width: this.state.layoutWidth/2.5}]}>
         <TriggeringView onHide={() => console.log("text hidden")}>
 
           {profileButtons}
