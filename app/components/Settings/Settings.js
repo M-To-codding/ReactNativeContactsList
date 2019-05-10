@@ -18,7 +18,7 @@ export default class Settings extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      settings: {},
+      settings: null,
       isFetching: true,
       shouldAppUpdate: false,
       componentText: this.props.languageData
@@ -40,6 +40,8 @@ export default class Settings extends React.Component {
           isFetching: false,
           shouldAppUpdate: false
         })
+      } else {
+        setAppSettings(settings);
       }
 
     })

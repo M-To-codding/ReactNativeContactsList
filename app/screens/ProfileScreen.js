@@ -31,6 +31,7 @@ export default class ProfileScreen extends React.Component {
       layoutWidth: 0,
       layoutHeight: 0,
       orientation: 'portrait',
+      showLauncher: true,
       loading: true
     }
   }
@@ -116,16 +117,54 @@ export default class ProfileScreen extends React.Component {
     })
   }
 
+  launcherHandler(isShowed) {
+
+    if (isShowed) {
+      this.setState({
+        showLauncher: true
+      })
+    }
+
+  }
+
+  pickLauncherItem() {
+    if (isShowed) {
+      this.setState({
+        showLauncher: false
+      })
+    }
+  }
+
   render() {
     let user = this.state.user;
     let photo = 'http://www.sbsc.in/images/dummy-profile-pic.png';
     let widthOfLayout = this.state.layoutWidth;
+    let launcher = '';
+
     if (user) {
       photo = user.picture.large;
     }
 
     if (this.state.loading) {
       return (<View style={profileStyles.container}><Text>Loading...</Text></View>);
+    }
+
+    if (this.state.showLauncher) {
+    launcher = <View style={{
+      flex: 1,
+      backgroundColor: '#000',
+      opacity: 0.7,
+      position: 'absolute',
+      width: wp('100%'),
+      height: hp('100%'),
+      top: 0,
+      bottom: 0,
+      right: 0,
+      left: 0,
+      zIndex: 2
+    }}>
+      <Text>edsdffd</Text>
+    </View>
     }
 
     let mainContent = <HeaderImageScrollView
@@ -167,6 +206,7 @@ export default class ProfileScreen extends React.Component {
     return (
 
       <View style={profileStyles.container} onLayout={() => this.onLayout()}>
+
         <StatusBar
           hidden={false}
           animated={true}
@@ -177,7 +217,7 @@ export default class ProfileScreen extends React.Component {
         <CustomImagePicker setProfileImage={this.setProfileImage.bind(this)}/>
 
         {mainContent}
-
+        {launcher}
       </View>
     );
   }
