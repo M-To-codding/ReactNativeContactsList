@@ -5,7 +5,7 @@ import {
   StatusBar,
   RefreshControl,
   Text, Dimensions,
-  Image
+  Image, TouchableOpacity
 } from 'react-native';
 import {NavigationActions, HeaderBackButton} from 'react-navigation';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -150,21 +150,64 @@ export default class ProfileScreen extends React.Component {
     }
 
     if (this.state.showLauncher) {
-    launcher = <View style={{
-      flex: 1,
-      backgroundColor: '#000',
-      opacity: 0.7,
-      position: 'absolute',
-      width: wp('100%'),
-      height: hp('100%'),
-      top: 0,
-      bottom: 0,
-      right: 0,
-      left: 0,
-      zIndex: 2
-    }}>
-      <Text>edsdffd</Text>
-    </View>
+      launcher = <View style={{
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        position: 'absolute',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
+        zIndex: 2
+      }}>
+
+        <View style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#fff',
+          bottom: 0,
+          paddingVertical: 80,
+          paddingHorizontal: 40,
+          width: wp('100%')
+        }}>
+
+          <View style={{
+            height: 1,
+            width: wp('100%'),
+            backgroundColor: '#f1f1f1',
+          }}/>
+
+          <TouchableOpacity style={{
+            paddingVertical: 20,
+            textAlign: 'center',
+            width: wp('100%')
+          }}>
+            <Text style={{textAlign: 'center',}}>Gallery</Text>
+          </TouchableOpacity>
+
+          <View style={{
+            height: 1,
+            width: wp('100%'),
+            backgroundColor: '#f1f1f1',
+          }}/>
+
+          <TouchableOpacity style={{
+            paddingVertical: 20,
+            width: wp('100%')
+          }}>
+            <Text style={{textAlign: 'center',}}>Camera</Text>
+          </TouchableOpacity>
+
+          <View style={{
+            height: 1,
+            width: wp('100%'),
+            backgroundColor: '#f1f1f1',
+          }}/>
+        </View>
+
+      </View>
     }
 
     let mainContent = <HeaderImageScrollView
