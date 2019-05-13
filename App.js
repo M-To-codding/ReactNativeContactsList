@@ -3,6 +3,9 @@ import {I18nManager, Platform, StatusBar, StyleSheet, View} from 'react-native';
 import {AppLoading, Asset, Font, Icon} from 'expo';
 import AppNavigator from './app/navigation/AppNavigator';
 
+
+import LocalNotifications from './app/components/LocalNotifications/LocalNotifications';
+
 try {
   I18nManager.allowRTL(false);
   I18nManager.forceRTL(false);
@@ -105,7 +108,7 @@ export default class App extends React.Component {
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" animated={true} backgroundColor="#000000"/>}
           {Platform.OS === 'android' && <StatusBar barStyle="dark-content" animated={true} backgroundColor="#000000"/>}
-
+          <LocalNotifications/>
           <AppNavigator onNavigationStateChange={this.checkPressing.bind(this)} screenProps={{
             homeScreenUpdate: this.state.homeScreenUpdate,
             checkSettingsScreenUpdates: this.checkSettingsScreenUpdates.bind(this),
