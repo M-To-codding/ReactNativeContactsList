@@ -1,11 +1,13 @@
 import React from 'react';
 import {Button, Image, View} from 'react-native';
 import {Icon} from 'react-native-elements';
-import {ImagePicker} from 'expo';
+import {ImagePicker, Permissions} from 'expo';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 export default class CustomImagePicker extends React.Component {
   state = {
     image: 'http://www.sbsc.in/images/dummy-profile-pic.png',
+    hasCameraPermission: null,
   };
 
   _pickImage = async () => {
@@ -14,31 +16,66 @@ export default class CustomImagePicker extends React.Component {
       aspect: [4, 3],
     });
 
-    console.log('resultCustomImagePicker');
-    console.log(result);
+    if (!result.cancelled) {
+      this.setState({image: result.uri});
+      this.props.setProfileImage(result.uri);
+
+      this.props.openLauncher(false, null, null);
+    }
+  };
+
+  openCamera = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
 
     if (!result.cancelled) {
       this.setState({image: result.uri});
       this.props.setProfileImage(result.uri);
+
+      this.props.openLauncher(false, null, null);
     }
   };
 
+  async componentDidMount() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    this.setState({ hasCameraPermission: status === 'granted' });
+  }
+
+  openLauncher(){
+    this.props.openLauncher(true, this._pickImage, this.openCamera);
+  }
 
   render() {
-    return (
-      <View style={{
+    let style = {
+      height: 50,
+      width: 50,
+      position: 'absolute',
+      backgroundColor: 'transparent',
+      zIndex: 2,
+      top: 30,
+      right: 0
+    }
+
+    if(this.props.isHorizontal) {
+      style={
         height: 50,
         width: 50,
         position: 'absolute',
         backgroundColor: 'transparent',
         zIndex: 2,
         top: 30,
-        right: 0
-      }}>
+        left: wp('55%')
+      }
+    }
+
+    return (
+      <View style={style}>
         <Icon
           name="add-a-photo"
           color="#fff"
-          onPress={this._pickImage.bind(this)}
+          onPress={this.openLauncher.bind(this)}
         />
       </View>
     );

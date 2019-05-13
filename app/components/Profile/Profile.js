@@ -133,11 +133,27 @@ export default class Profile extends React.Component {
     }
 
     let container = '';
+    let buttonsContainerStyle = this.state.profileStyles.btnsContainer;
+    let buttonHeight = {height: 70};
+
+    if(this.props.isHorizontal) {
+      buttonsContainerStyle = {
+        width: wp('15%'),
+        flexDirection: 'column',
+        overflow: 'hidden',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#000',
+        position: 'absolute',
+        right: wp('-14%')
+      }
+      buttonHeight =  {height: hp('55%')};
+    }
 
     if (!this.state.user.isNewContact && !this.props.navigation.state.params.isNewContact) {
 
       container =
-        <View style={this.state.profileStyles.btnsContainer}>
+        <View style={[buttonsContainerStyle, buttonHeight]}>
           <ProfileButton btnsData={btnsData} user={this.state.user} goBack={this.props.goBack}/>
         </View>;
 
@@ -150,7 +166,7 @@ export default class Profile extends React.Component {
       btnsData = setData(state, this.saveContact.bind(this));
 
       container =
-        <View style={this.state.profileStyles.btnsContainer}>
+        <View style={[this.state.profileStyles.btnsContainer, buttonsContainerStyle, buttonHeight]}>
           <ProfileButton btnsData={btnsData} user={user} goBack={this.props.goBack}/>
         </View>;
     }
@@ -160,9 +176,6 @@ export default class Profile extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.layoutWidth !== this.props.layoutWidth) {
-      console.log('layoutWidth')
-      console.log(prevProps)
-      console.log(this.props)
       this.setState({
         layoutWidth: this.props.layoutWidth,
         orientation: this.props.orientation

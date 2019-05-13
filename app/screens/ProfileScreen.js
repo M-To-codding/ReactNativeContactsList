@@ -5,7 +5,7 @@ import {
   StatusBar,
   RefreshControl,
   Text, Dimensions,
-  Image, TouchableOpacity
+  Image, TouchableOpacity, TouchableHighlight
 } from 'react-native';
 import {NavigationActions, HeaderBackButton} from 'react-navigation';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -25,14 +25,18 @@ export default class ProfileScreen extends React.Component {
 
     let user = props.navigation.state.params.user;
 
+    this.launcherHandler.bind(this);
+
     this.state = {
       refreshing: false,
       user: user,
       layoutWidth: 0,
       layoutHeight: 0,
       orientation: 'portrait',
-      showLauncher: true,
-      loading: true
+      showLauncher: false,
+      loading: true,
+      openGallery: null,
+      openCamera: null
     }
   }
 
@@ -59,7 +63,6 @@ export default class ProfileScreen extends React.Component {
       saved: user.saved
     })
   }
-
 
   static navigationOptions = ({navigation}) => {
     return {
@@ -95,6 +98,13 @@ export default class ProfileScreen extends React.Component {
   }
 
   handleBackButtonClick(isDataChanged) {
+    if (this.state.showLauncher) {
+      this.setState({
+        showLauncher: false
+      });
+      return;
+    }
+
     if (isDataChanged) {
       this.forceUpdate();
     }
@@ -117,29 +127,31 @@ export default class ProfileScreen extends React.Component {
     })
   }
 
-  launcherHandler(isShowed) {
-
+  launcherHandler(isShowed, openGallery, openCamera) {
+    console.log('isShowed')
+    console.log(isShowed)
     if (isShowed) {
       this.setState({
-        showLauncher: true
+        showLauncher: true,
+        openGallery: openGallery,
+        openCamera: openCamera
+      })
+    } else {
+      this.setState({
+        showLauncher: false,
+        openGallery: null,
+        openCamera: null
       })
     }
 
-  }
-
-  pickLauncherItem() {
-    if (isShowed) {
-      this.setState({
-        showLauncher: false
-      })
-    }
   }
 
   render() {
     let user = this.state.user;
     let photo = 'http://www.sbsc.in/images/dummy-profile-pic.png';
     let widthOfLayout = this.state.layoutWidth;
-    let launcher = '';
+    let launcher = null;
+    let isHorizontal = this.state.orientation === 'landscape' ? true : false
 
     if (user) {
       photo = user.picture.large;
@@ -150,18 +162,34 @@ export default class ProfileScreen extends React.Component {
     }
 
     if (this.state.showLauncher) {
-      launcher = <View style={{
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        position: 'absolute',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        top: 0,
-        bottom: 0,
-        right: 0,
-        left: 0,
-        zIndex: 2
-      }}>
+      launcher = <View
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          position: 'absolute',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          top: 0,
+          bottom: 0,
+          right: 0,
+          left: 0,
+          zIndex: 2
+        }}
+      >
+
+        <TouchableHighlight
+          activeOpacity={0}
+          style={{
+            flex: 1,
+            height: hp('50%'),
+            width: wp('100%'),
+            opacity: 0
+          }}
+          onPress={() => {
+            this.launcherHandler(false);
+          }}>
+          <Text>Show Modal</Text>
+        </TouchableHighlight>
 
         <View style={{
           justifyContent: 'center',
@@ -179,11 +207,13 @@ export default class ProfileScreen extends React.Component {
             backgroundColor: '#f1f1f1',
           }}/>
 
-          <TouchableOpacity style={{
-            paddingVertical: 20,
-            textAlign: 'center',
-            width: wp('100%')
-          }}>
+          <TouchableOpacity
+            style={{
+              paddingVertical: 20,
+              textAlign: 'center',
+              width: wp('100%')
+            }}
+            onPress={this.state.openGallery ? () => this.state.openGallery() : undefined}>
             <Text style={{textAlign: 'center',}}>Gallery</Text>
           </TouchableOpacity>
 
@@ -193,10 +223,12 @@ export default class ProfileScreen extends React.Component {
             backgroundColor: '#f1f1f1',
           }}/>
 
-          <TouchableOpacity style={{
-            paddingVertical: 20,
-            width: wp('100%')
-          }}>
+          <TouchableOpacity
+            style={{
+              paddingVertical: 20,
+              width: wp('100%')
+            }}
+            onPress={this.state.openCamera ? () => this.state.openCamera() : undefined}>
             <Text style={{textAlign: 'center',}}>Camera</Text>
           </TouchableOpacity>
 
@@ -206,7 +238,6 @@ export default class ProfileScreen extends React.Component {
             backgroundColor: '#f1f1f1',
           }}/>
         </View>
-
       </View>
     }
 
@@ -226,7 +257,7 @@ export default class ProfileScreen extends React.Component {
       scrollViewBackgroundColor="#fff">
 
       <Profile {...this.props} profileStyles={profileStyles} layoutWidth={widthOfLayout} user={this.state.user}
-               goBack={this.handleBackButtonClick.bind(this)}/>
+               goBack={this.handleBackButtonClick.bind(this)} isHorizontal={isHorizontal}/>
 
     </HeaderImageScrollView>;
 
@@ -241,7 +272,7 @@ export default class ProfileScreen extends React.Component {
         />
 
         <Profile {...this.props} profileStyles={profileStyles} layoutWidth={widthOfLayout} user={this.state.user}
-                 goBack={this.handleBackButtonClick.bind(this)}/>
+                 goBack={this.handleBackButtonClick.bind(this)} isHorizontal={isHorizontal}/>
 
       </View>
     }
@@ -257,7 +288,8 @@ export default class ProfileScreen extends React.Component {
           backgroundColor={"#000"}
         />
 
-        <CustomImagePicker setProfileImage={this.setProfileImage.bind(this)}/>
+        <CustomImagePicker setProfileImage={this.setProfileImage.bind(this)}
+                           openLauncher={this.launcherHandler.bind(this)} isHorizontal={isHorizontal}/>
 
         {mainContent}
         {launcher}
