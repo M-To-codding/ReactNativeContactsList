@@ -25,6 +25,10 @@ export default class CustomImagePicker extends React.Component {
   };
 
   openCamera = async () => {
+    const {status} = await Permissions.askAsync(Permissions.CAMERA);
+    await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    this.setState({hasCameraPermission: status === 'granted'});
+
     let result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
@@ -39,11 +43,9 @@ export default class CustomImagePicker extends React.Component {
   };
 
   async componentDidMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ hasCameraPermission: status === 'granted' });
   }
 
-  openLauncher(){
+  openLauncher() {
     this.props.openLauncher(true, this._pickImage, this.openCamera);
   }
 
@@ -58,8 +60,8 @@ export default class CustomImagePicker extends React.Component {
       right: 0
     }
 
-    if(this.props.isHorizontal) {
-      style={
+    if (this.props.isHorizontal) {
+      style = {
         height: 50,
         width: 50,
         position: 'absolute',
