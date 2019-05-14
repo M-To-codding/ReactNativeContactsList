@@ -60,7 +60,7 @@ export default class Settings extends React.Component {
     setTimeout(() => {
       setAppSettings(this.state.settings);
       this.getSettings();
-    }, 100)
+    }, 5)
 
   }
 
@@ -100,7 +100,8 @@ export default class Settings extends React.Component {
 
     this.setState({
       settings,
-      isFetching: true
+      isFetching: true,
+      shouldAppUpdate: true
     });
 
     setTimeout(() => {
@@ -199,6 +200,7 @@ export default class Settings extends React.Component {
 
           <View style={{borderBottomWidth: 1, borderColor: '#e6e6e6'}}/>
 
+          {/*----Notifications----------*/}
 
           <View style={{flex: 1, paddingVertical: 20}}>
             <Text style={{color: '#979797'}}>
@@ -237,6 +239,8 @@ export default class Settings extends React.Component {
               </Text>
             </View>
           </View>
+
+          {/*----/Notifications----------*/}
 
           <View style={{borderBottomWidth: 1, borderColor: '#e6e6e6'}}/>
 
