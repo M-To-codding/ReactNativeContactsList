@@ -3,18 +3,71 @@ import {TextInput, Text, View, Keyboard} from 'react-native';
 import {Constants, Notifications, Permissions} from 'expo';
 
 import fetchNotification from "../../api/fetchNotification";
+import getAppSettings from "../../actions/getAppSettings";
 
 export default class LocalNotifications extends Component {
   constructor(props) {
     super(props);
 
-    setInterval(()=>{
-      this.onSubmit()
-    }, 15000)
+    this.state = {
+      loading: true,
+      isEnabled: true,
+      sendNotification: false,
+      notificationSended: false,
+      timer: 10000
+    }
+
+    this.notificationInterval = '';
+
+    this.getNotificationPermissions();
   }
 
+  async getNotificationPermissions() {
+    await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
+    await Permissions.askAsync(Permissions.NOTIFICATIONS);
+  }
 
-  onSubmit(e) {
+  getNotificationsSettings() {
+
+    let notificationDelay = this.state.timer;
+    let notificationEnabled = this.state.isEnabled;
+    let data = {};
+    let that = this;
+
+    getAppSettings().then((response) => {
+      if (response) {
+        console.log('getNotificationsSettings')
+        console.log(response)
+        data = JSON.parse(response)
+        notificationDelay = data.notifications.notificationsDelay.selectedCount * 10000
+        notificationEnabled = data.notifications.isShown;
+
+        if(that.state.isEnabled !== notificationEnabled) {
+          Notifications.cancelAllScheduledNotificationsAsync();
+        }
+
+        that.setState({
+          isEnabled: notificationEnabled,
+          timer: notificationDelay
+        })
+
+        console.log('getNotificationsSettings')
+        console.log(this.state)
+        if (notificationEnabled) {
+          this.sendNotification();
+        } else {
+          Notifications.cancelAllScheduledNotificationsAsync();
+        }
+
+        return data;
+      }
+    })
+  }
+
+  sendNotification() {
+    if (!this.state.isEnabled) {
+      return
+    }
     Keyboard.dismiss();
 
     let localNotification = null;
@@ -23,14 +76,33 @@ export default class LocalNotifications extends Component {
       console.log('fetchNotification')
       console.log(response)
       if (response) {
-        return localNotification = {
+        localNotification = {
           title: response.source,
-          body: response.text
+          body: response.text,
+          android: {
+            sound: true,
+            vibrate: [0, 250, 250, 250],
+            priority: 'high',
+          },
+          ios: {
+            sound: true,
+            vibrate: [0, 250, 250, 250],
+            priority: 'high',
+          },
         };
 
+        let time = (new Date()).getTime();
+        time += this.state.timer;
+
+        // if(!this.state.notificationSended) {
+        //   time = 10000
+        //   this.setState({
+        //     notificationSended: true
+        //   })
+        // }
+
         const schedulingOptions = {
-          time: (new Date()).getTime() + 15000,
-          repeat: 'minute'
+          time: time
         }
 
         Notifications.scheduleLocalNotificationAsync(
@@ -42,6 +114,7 @@ export default class LocalNotifications extends Component {
 
   handleNotification() {
     console.warn('ok! got your notif');
+    this.sendNotification()
   }
 
   async componentDidMount() {
@@ -51,12 +124,42 @@ export default class LocalNotifications extends Component {
       console.log('Notification permissions granted.')
     }
 
-    Notifications.addListener(this.handleNotification);
+    Notifications.addListener(this.handleNotification.bind(this));
+
+    if (this.state.loading) {
+
+      this.getNotificationsSettings();
+
+      if (!this.state.isEnabled) {
+        Notifications.cancelAllScheduledNotificationsAsync();
+      }
+
+      this.setState({
+        loading: false
+      })
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    console.log('componentDidUpdateNotification')
+    // if (this.state.loading) {
+    //
+    //   this.getNotificationsSettings();
+    //
+    //   this.setState({
+    //     loading: false
+    //   })
+    // }
+  }
+
+  async componentWillUnmount() {
+    this.setState({
+      sendNotification: false
+    })
+    Notifications.cancelAllScheduledNotificationsAsync();
   }
 
   render() {
-
-    this.onSubmit();
 
     return (
       <View style={{flexDirection: 'row', justifyContent: 'center'}}>
