@@ -83,7 +83,8 @@ export default class HomeScreen extends React.Component {
     getData().then((response) => {
 
       console.log(JSON.parse(response))
-      if (this._isMounted && response) {
+      // if (this._isMounted && response) {
+      if (this._isMounted ) {
         that.setState({
           contacts: JSON.parse(response) || null,
           loading: false
@@ -122,6 +123,7 @@ export default class HomeScreen extends React.Component {
       style={styles.welcomeImage}
     />
       <Text> Loading...</Text></View>);
+
 
     return (
       <View style={styles.container}>
