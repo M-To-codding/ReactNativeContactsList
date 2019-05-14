@@ -5,8 +5,12 @@ import settings from './../data/settings';
 const getAppSettings = async () => {
 
   try {
-    // await AsyncStorage.setItem('settingsData', JSON.stringify(settings));
     const settingsData = await AsyncStorage.getItem('settingsData');
+
+    if (!settingsData ) {
+      await AsyncStorage.setItem('settingsData', JSON.stringify(settings));
+      return settings;
+    }
 
     if (settingsData ) {
       return settingsData;
