@@ -29,7 +29,7 @@ export default class ProfileButton extends React.Component {
 
     // contact.saved = !this.state.saved;
     if (contact.saved) {
-      contact.login.uuid += '1';
+      // contact.login.uuid += '1';
     } else {
       contact.saved = true;
     }
