@@ -1,7 +1,7 @@
 import {AsyncStorage} from 'react-native';
 
 
-const storeData = async (contact) => {
+const storeData = async (contact, resetData) => {
 
   try {
     let contactsArr = await AsyncStorage.getItem('userContacts') || [];
@@ -23,6 +23,9 @@ const storeData = async (contact) => {
 
     await AsyncStorage.setItem('userContacts', JSON.stringify(contactsArr));
 
+    if(resetData){
+     await resetData()
+    }
   } catch (e) {
     console.log(e);
   }

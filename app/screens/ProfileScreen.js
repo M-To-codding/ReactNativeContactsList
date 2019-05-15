@@ -17,13 +17,35 @@ import CustomImagePicker from '../components/CustomImagePicker';
 import {Avatar} from "react-native-elements";
 
 
+let userData = {
+  name: {
+    first: '',
+    last: '',
+  },
+  gender: 'mail',
+  dob: {
+    date: ''
+  },
+  phone: '',
+  picture: {
+    large: 'http://www.sbsc.in/images/dummy-profile-pic.png',
+    medium: 'http://www.sbsc.in/images/dummy-profile-pic.png'
+  },
+  email: '',
+  login: {
+    uuid: ''
+  },
+  saved: true,
+  isNewContact: true
+}
+
 export default class ProfileScreen extends React.Component {
   constructor(props) {
 
     super(props);
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
-    let user = props.navigation.state.params.user;
+    let user = props.navigation.state.params.user || userData;
 
     this.launcherHandler.bind(this);
 

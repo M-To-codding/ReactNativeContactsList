@@ -12,24 +12,6 @@ import storeData from "../../actions/storeDataInAsyncStorage";
 import removeData from "../../actions/removeDataFromAsyncStorage";
 
 
-let userData = {
-  name: {
-    first: '',
-    last: '',
-  },
-  gender: '',
-  dob: {
-    date: ''
-  },
-  phone: '',
-  email: '',
-  login: {
-    uuid: ''
-  },
-  saved: true,
-  isNewContact: true
-}
-
 export default class Profile extends React.Component {
   constructor(props) {
     super(props);
@@ -54,13 +36,17 @@ export default class Profile extends React.Component {
     } else {
 
       this.state = {
-        user: userData,
+        user: user,
         profileStyles: props.profileStyles,
         name: '',
         lastName: '',
         gender: 'male',
         date: '',
         phone: '',
+        picture: {
+          large: 'http://www.sbsc.in/images/dummy-profile-pic.png',
+          medium: 'http://www.sbsc.in/images/dummy-profile-pic.png'
+        },
         email: '',
         saved: true,
         editable: true,
@@ -84,6 +70,7 @@ export default class Profile extends React.Component {
       newContact.email = this.state.email;
 
       storeData(newContact);
+
       if (this.props.navigation.state.params.handleCheckedContactsInList) {
         this.props.navigation.state.params.handleCheckedContactsInList(newContact.login.uuid, 'saved');
       }
@@ -97,10 +84,6 @@ export default class Profile extends React.Component {
       newContact.phone = this.state.phone;
       newContact.email = this.state.email;
       newContact.saved = true;
-      newContact.picture = {
-        large: 'http://www.sbsc.in/images/dummy-profile-pic.png',
-        medium: 'http://www.sbsc.in/images/dummy-profile-pic.png'
-      };
       newContact.login.uuid = '_01_';
 
       newContact.isNewContact = false;
@@ -109,8 +92,7 @@ export default class Profile extends React.Component {
         newContact.login.uuid += Math.random();
       }
 
-      storeData(newContact);
-
+      storeData(newContact,  this.resetUserData.bind(this));
     }
 
     this.props.navigation.state.params.checkUpdates(true);
@@ -120,6 +102,33 @@ export default class Profile extends React.Component {
     removeData(id);
     this.props.navigation.state.params.checkUpdates(true);
     this.props.navigation.state.params.handleCheckedContactsInList(id, 'deleted');
+  }
+
+  resetUserData() {
+    let user = this.state.user;
+
+    user.name.first = '';
+    user.name.last = '';
+    user.dob.date = '';
+    user.phone = '';
+    user.email = '';
+    user.login.uuid = '';
+    user.picture.large = 'http://www.sbsc.in/images/dummy-profile-pic.png'
+    user.picture.medium = 'http://www.sbsc.in/images/dummy-profile-pic.png'
+
+    this.setState({
+      user: user,
+      name: '',
+      lastName: '',
+      date: '',
+      phone: '',
+      picture: {
+        large: 'http://www.sbsc.in/images/dummy-profile-pic.png',
+        medium: 'http://www.sbsc.in/images/dummy-profile-pic.png'
+      },
+      email: '',
+      saved: true,
+    })
   }
 
   handleProfileButtons() {
@@ -136,7 +145,7 @@ export default class Profile extends React.Component {
     let buttonsContainerStyle = this.state.profileStyles.btnsContainer;
     let buttonHeight = {height: 70};
 
-    if(this.props.isHorizontal) {
+    if (this.props.isHorizontal) {
       buttonsContainerStyle = {
         width: wp('15%'),
         flexDirection: 'column',
@@ -147,7 +156,7 @@ export default class Profile extends React.Component {
         position: 'absolute',
         right: wp('-14%')
       }
-      buttonHeight =  {height: hp('55%')};
+      buttonHeight = {height: hp('55%')};
     }
 
     if (!this.state.user.isNewContact && !this.props.navigation.state.params.isNewContact) {
@@ -197,7 +206,10 @@ export default class Profile extends React.Component {
 
     return (
 
-      <View style={[this.state.profileStyles.detailsContainer, {minHeight: hp('83%'), width: this.state.layoutWidth/2.5}]}>
+      <View style={[this.state.profileStyles.detailsContainer, {
+        minHeight: hp('83%'),
+        width: this.state.layoutWidth / 2.5
+      }]}>
         <TriggeringView onHide={() => console.log("text hidden")}>
 
           {profileButtons}
