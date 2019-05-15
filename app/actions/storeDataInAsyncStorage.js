@@ -8,7 +8,14 @@ const storeData = async (contact) => {
 
     if (contactsArr.length > 0) {
       contactsArr = JSON.parse(contactsArr);
+
+      await contactsArr.forEach((item, index) => {
+        if (item.login.uuid === contact.login.uuid) {
+          contactsArr.splice(index, 1);
+        }
+      })
       contactsArr.push(contact);
+
     } else {
       contactsArr = [];
       contactsArr.push(contact);
